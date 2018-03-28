@@ -58,7 +58,7 @@ session_start();
                             <div class="col-lg-12">
                                 <form id="login-form" action="#" method="post" role="form" style="display: block;" autocomplete="off">
                                     <div class="form-group">
-                                        <input type="text" name="adminLogUname" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                        <input type="text" name="adminLogUname" id="username" tabindex="1" class="form-control" placeholder="Username" maxlength="">
                                     </div>
                                     <div class="form-group">
                                         <input type="password" name="adminLogPasswd" id="password" tabindex="2" class="form-control" placeholder="Password">
@@ -78,19 +78,19 @@ session_start();
                                 
                                 <form id="admin_login" action="#" method="post" role="form" style="display: none;" autocomplete="off">
                                     <div class="form-group">
-                                        <input type="text" name="adminRegName" id="name" tabindex="1" class="form-control" placeholder="Name" value="">
+                                        <input type="text" name="adminRegName" id="name" tabindex="1" class="form-control" placeholder="Name" maxlength="50">
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="adminRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" value="">
+                                        <input type="email" name="adminRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" maxlength="50">
                                     </div>
                                     <div class="form-group">
-                                        <input type="email" name="adminRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="">
+                                        <input type="text" name="adminRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" maxlength="30">
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="adminRegPassword" id="regpassword" tabindex="2" class="form-control" placeholder="Password">
+                                        <input type="password" name="adminRegPassword" id="regpassword" tabindex="2" class="form-control" placeholder="Password" maxlength="50">
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="adminRegConpassword" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
+                                        <input type="password" name="adminRegConpassword" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password" maxlength="50">
                                     </div>
                                     <div class="form-group">
                                         <div class="row">
@@ -111,6 +111,7 @@ session_start();
     <script src="asset/js/jquery-slim.min.js"></script>
     <script src="asset/js/popper.min.js"></script>
     <script src="asset/js/bootstrap.min.js"></script>
+    <script src="asset/js/jquery-3.3.1.min.js"></script>
 
     <script type="text/javascript">
         $(function() {
@@ -170,7 +171,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminRegistration'])) 
     $adminEmail             = validate_input($_POST['adminRegEmail']);
     $adminPassword          = validate_input($_POST['adminRegPassword']);
     $adminConPassword       = validate_input($_POST['adminRegConpassword']);
-    //echo $adminUsername . " : " . $adminEmail . " : " . $adminPassword . " : " . $adminConPassword;
     if (empty($adminName) || empty($adminUsername) || empty($adminEmail) || empty($adminPassword) || empty($adminConPassword)) {
         echo '<script>document.getElementById("error").innerHTML="All fields are required."</script>';
     } else {

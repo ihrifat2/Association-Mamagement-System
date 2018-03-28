@@ -21,46 +21,38 @@ if (!$_SESSION['AMS_admin_login']) {
 
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container">
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#AMSNavbar" aria-controls="AMSNavbar" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<div class="collapse navbar-collapse" id="navbarsExample07">
+			<div class="collapse navbar-collapse" id="AMSNavbar">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
-						<a class="nav-link" href="index.php"><?php echo $project_name; ?> <span class="sr-only">(current)</span></a>
+						<a class="nav-link" href="index.php">
+							<i class="fas fa-home"></i>
+							HOME
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="admin_loan.php">
+							Loan
+						</a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-md-0">
-					<?php
-					if (!$_SESSION['AMS_admin_login']) {
-						echo '
-						<li class="nav-item mr-2">
-							<a class="nav-link btn btn-outline-secondary text-light" href="admin_login.php">Admin Login</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="user_login.php">User Login</a>
-						</li>
-						';
-					} else {
-						echo '
-						<li class="nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="admin_dashboard.php">Dashboard</a>
-						</li>
-						<li class="ml-2 nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="logout.php">Logout</a>
-						</li>
-						';
-					}
-					?>
+					<li class="nav-item">
+						<a class="nav-link btn btn-outline-secondary text-light" href="admin_dashboard.php">Dashboard</a>
+					</li>
+					<li class="ml-2 nav-item">
+						<a class="nav-link btn btn-outline-secondary text-light" href="logout.php">Logout</a>
+					</li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 	<?php
-
 		$data = array();
-		$sqlquery = "SELECT `id`, `userName`, `userEmail` FROM `user_info`";
+		$sqlquery = "SELECT `id`, `userName`, `userEmail`, `userUsername` FROM `user_info`";
 		if ($result = $conn->query($sqlquery)) {
 			while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
 				$data[] = $rows;
@@ -68,12 +60,11 @@ if (!$_SESSION['AMS_admin_login']) {
 			$result->close();
 		}
 		//$conn->close();
-	
 	?>
-	<main role="main" class="container-fluid my-2">
+	<main role="main" class="container-fluid">
 
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-5 mt-4">
 				<div class="card">
 					<div class="card-header">
 						<h3>User List</h3>
@@ -84,6 +75,7 @@ if (!$_SESSION['AMS_admin_login']) {
 								<tr>
 									<th>Name</th>
 									<th>Email</th>
+									<th>Message</th>
 									<th>Action</th>
 								</tr>
 							</thead>
@@ -94,11 +86,16 @@ if (!$_SESSION['AMS_admin_login']) {
 									echo "<tr>";
 									echo "<td>" . ucfirst($row['userName']) . "</td>";
 									echo "<td>" . $row['userEmail'] . "</td>";
+									echo '<td>
+										<a href="admin_message.php?name='.$row['userUsername'].'" class="btn btn-text">
+											<i class="fas fa-paper-plane"></i>
+										</a>
+									</td>';
+									// <a href="admin_edit.php?id='.$row['id'].'" class="btn btn-info">
+									// 		<i class="fas fa-edit"></i>
+									// 	</a>
 									echo '
 									<td>
-										<a href="admin_edit.php?id='.$row['id'].'" class="btn btn-info">
-											<i class="fas fa-edit"></i>
-										</a>
 										<button type="button" id="userDelete" class="btn btn-danger" onclick="userRemove('.$row['id'].')" data-toggle="modal" data-target="#AMSModal">
 											<i class="fas fa-trash-alt"></i>
 										</button>
@@ -116,7 +113,7 @@ if (!$_SESSION['AMS_admin_login']) {
 			<?php
 
 				$data = array();
-				$sqlquery = "SELECT `id`, `username`, `money`, `loan` FROM `user_data`";
+				$sqlquery = "SELECT * FROM `user_data`";
 				if ($result = $conn->query($sqlquery)) {
 					while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
 						$data[] = $rows;
@@ -126,20 +123,21 @@ if (!$_SESSION['AMS_admin_login']) {
 				//$conn->close();
 			
 			?>
-			<div class="col-md-6">
+			<div class="col-md-7 mt-4">
 				<div class="card">
 					<div class="card-header">
 						<h3>User Details</h3>
 					</div>
 					<div class="card-body depoMoney">
-						<table class="table table-hover">
+						<table class="table table-hover table-bordered">
 							<thead>
 								<tr>
 									<th>Name</th>
-									<th>Ammount</th>
+									<th>Amount</th>
 									<th>Loan</th>
 									<th>Cash IN</th>
 									<th>Cash OUT</th>
+									<th>Withdraw Request</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -162,6 +160,7 @@ if (!$_SESSION['AMS_admin_login']) {
 												</a>
 											</td>
 										';
+										echo "<td class='text-danger font-weight-bold'>" . $row['RequestWithdraw'] . "</td>";
 										echo "</tr>";
 									}
 
@@ -217,7 +216,7 @@ if (isset($_POST['deleteUser'])) {
     if ($deleteUserResult1 && $deleteUserResult2) {
         //setcookie('bookId', '', time() - 3600);
         echo '<script>document.cookie = "bookId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";</script>';
-        echo "<script>document.getElementById('success').innerHTML = 'User Deleted.' </script>";
+        echo "<script>javascript:document.location='admin_dashboard.php'</script>";
     } else {
         echo "<script>document.getElementById('error').innerHTML = 'Failed to Delete user.' </script>";
     }

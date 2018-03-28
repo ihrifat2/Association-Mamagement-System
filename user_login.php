@@ -58,7 +58,7 @@ session_start();
                             <div class="col-lg-12">
                                 <form id="login-form" action="#" method="post" role="form" style="display: block;" autocomplete="off">
                                     <div class="form-group">
-                                        <input type="text" name="userLogUname" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                        <input type="text" name="userLogUname" id="username" tabindex="1" class="form-control" placeholder="Username" maxlength="50">
                                     </div>
                                     <div class="form-group">
                                         <input type="password" name="userLogPasswd" id="password" tabindex="2" class="form-control" placeholder="Password">
@@ -78,19 +78,19 @@ session_start();
                                 
                                 <form id="admin_login" action="#" method="post" role="form" style="display: none;" autocomplete="off">
                                     <div class="form-group">
-                                        <input type="text" name="userRegName" id="name" tabindex="1" class="form-control" placeholder="Name" value="">
+                                        <input type="text" name="userRegName" id="name" tabindex="1" class="form-control" placeholder="Name" maxlength="50">
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="userRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" value="">
+                                        <input type="email" name="userRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" maxlength="50">
                                     </div>
                                     <div class="form-group">
-                                        <input type="email" name="userRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="">
+                                        <input type="text" name="userRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" maxlength="30">
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="userRegPassword" id="regpassword" tabindex="2" class="form-control" placeholder="Password">
+                                        <input type="password" name="userRegPassword" id="regpassword" tabindex="2" class="form-control" placeholder="Password" maxlength="50">
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="userRegConpassword" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
+                                        <input type="password" name="userRegConpassword" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password" maxlength="50">
                                     </div>
                                     <div class="form-group">
                                         <div class="row">
@@ -111,6 +111,7 @@ session_start();
     <script src="asset/js/jquery-slim.min.js"></script>
     <script src="asset/js/popper.min.js"></script>
     <script src="asset/js/bootstrap.min.js"></script>
+    <script src="asset/js/jquery-3.3.1.min.js"></script>
 
     <script type="text/javascript">
         $(function() {
@@ -170,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
     $userEmail             = validate_input($_POST['userRegEmail']);
     $userPassword          = validate_input($_POST['userRegPassword']);
     $userConPassword       = validate_input($_POST['userRegConpassword']);
-    echo $userUsername . " : " . $userEmail . " : " . $userPassword . " : " . $userConPassword;
+    //echo $userUsername . " : " . $userEmail . " : " . $userPassword . " : " . $userConPassword;
     if (empty($userName) || empty($userUsername) || empty($userEmail) || empty($userPassword) || empty($userConPassword)) {
         echo '<script>document.getElementById("error").innerHTML="All fields are required."</script>';
     } else {
@@ -181,8 +182,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
                 $userPassword = password_hash($userConPassword, PASSWORD_BCRYPT);
                 $money = 0;
                 $loan = 0;
+                $RequestWithdraw = 0;
                 $userRegQuery1 = "INSERT INTO `user_info`(`id`, `userName`, `userEmail`, `userUsername`, `userPassword`) VALUE (NULL, '$userName', '$userEmail', '$userUsername', '$userPassword')";
-                $userRegQuery2 = "INSERT INTO `user_data`(`id`, `username`, `money`, `loan`) VALUES (NULL, '$userUsername', '$money', '$loan')";
+                $userRegQuery2 = "INSERT INTO `user_data`(`id`, `username`, `money`, `loan`, `RequestWithdraw`) VALUES (NULL, '$userUsername', '$money', '$loan', '$RequestWithdraw')";
                 $userRegResult1 = mysqli_Query($conn, $userRegQuery1);
                 $userRegResult2 = mysqli_Query($conn, $userRegQuery2);
                 if ($userRegResult1 && $userRegResult2) {

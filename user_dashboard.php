@@ -1,5 +1,4 @@
 <?php
-
 require 'config.php';
 session_start();
 if (!$_SESSION['AMS_user_login']) {
@@ -21,43 +20,37 @@ if ($userData) {
 	<title><?php echo $project_name; ?></title>
 	<link rel="stylesheet" href="asset/css/bootstrap.min.css">
 	<link rel="stylesheet" href="asset/css/style.css">
+	<style>
+	
+	</style>
 </head>
 <body class="text-center">
 
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container">
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#AMSNavbar" aria-controls="AMSNavbar" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<div class="collapse navbar-collapse" id="navbarsExample07">
+			<div class="collapse navbar-collapse" id="AMSNavbar">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
-						<a class="nav-link" href="index.php"><?php echo $project_name; ?> <span class="sr-only">(current)</span></a>
+						<a class="nav-link" href="index.php">
+							<?php echo $project_name; ?>
+							<span class="sr-only">(current)</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="user_message.php?name=<?php echo $username ?>">Message</a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-md-0">
-					<?php
-					if (!$_SESSION['AMS_user_login']) {
-						echo '
-						<li class="nav-item mr-2">
-							<a class="nav-link btn btn-outline-secondary text-light" href="admin_login.php">Admin Login</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="user_login.php">User Login</a>
-						</li>
-						';
-					} else {
-						echo '
-						<li class="nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="user_dashboard.php">Dashboard</a>
-						</li>
-						<li class="ml-2 nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="logout.php">Logout</a>
-						</li>
-						';
-					}
-					?>
+					<li class="nav-item">
+						<a class="nav-link btn btn-outline-secondary text-light" href="user_dashboard.php">Dashboard</a>
+					</li>
+					<li class="ml-2 nav-item">
+						<a class="nav-link btn btn-outline-secondary text-light" href="logout.php">Logout</a>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -65,19 +58,19 @@ if ($userData) {
 
 	<main role="main" class="container">
 
-		<div class="row AMS_userDash">
-			<div class="col-md-6">
+		<div class="row">
+			<div class="col-md-4 mt-4">
 				<div class="card">
 					<div class="card-header">
-						<h3>Deposit Money</h3>
+						<b>
+							<h3>Deposit Money</h3>
+						</b>
 					</div>
 					<div class="card-body">
 						<?php echo $userMoney; ?>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="card">
+				<div class="card mt-4">
 					<div class="card-header">
 						<h3>Loan</h3>
 					</div>
@@ -85,10 +78,6 @@ if ($userData) {
 						<?php echo $userLoan; ?>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="row justify-content-md-center">
-			<div class="col-md-6">
 				<div class="card mt-4">
 					<div class="card-header">
 						<h3>Loan Status</h3>
@@ -103,12 +92,196 @@ if ($userData) {
 						?>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<button type="button" class="btn btn-outline-info mt-4 float-left" data-toggle="modal" data-target="#AMSloanApply">Loan Apply</button>
+					</div>
+					<div class="col-sm-6">
+						<button type="button" class="btn btn-outline-info mt-4 float-right" data-toggle="modal" data-target="#AMSWithdrawRequest">Withdraw Request</button>
+					</div>
+				</div>
+			</div>
+			<?php
+
+				$data = array();
+				$sqlquery = "SELECT `beforeWithdraw`, `withdrawMoney`, `afterWithdraw`, `time`, `date` FROM `withdraw_status` WHERE `username` = '$username' ORDER BY `withdraw_status`.`id` DESC ";
+				if ($result = $conn->query($sqlquery)) {
+					while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
+						$data[] = $rows;
+					}
+					$result->close();
+				}
+				//$conn->close();	
+			?>
+			<div class="col-md-8">
+				<div class="card mt-4">
+					<div class="card-header">
+						<h3>Withdraw Money Status</h3>
+					</div>
+					<div class="card-body userWithdraw">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>Before Withdraw</th>
+									<th>Withdraw Amount</th>
+									<th>After Withdraw</th>
+									<th>Time</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+
+									foreach ($data as $row) {
+										echo "<tr>";
+										echo "<td>" . $row['beforeWithdraw'] . "</td>";
+										echo "<td>" . $row['withdrawMoney'] . "</td>";
+										echo "<td>" . $row['afterWithdraw'] . "</td>";
+										echo "<td>" . $row['date'] . "</td>";
+										echo "<td>" . $row['time'] . "</td>";
+										echo "</tr>";
+									}
+								?>
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 
+		<!-- Modal -->
+		<div class="modal fade" id="AMSloanApply" tabindex="-1" role="dialog" aria-labelledby="AMSModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="AMSModalLabel">Apply for Loan</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form action="#" method="post">
+						<div class="modal-body">
+							<div class="form-group row">
+                            	<label for="Name" class="col-sm-3 col-form-label">Full Name</label>
+    							<div class="col-sm-9">
+	                                <input type="text" name="loanName" id="name" tabindex="1" class="form-control" maxlength="45">
+	                            </div>
+                            </div>
+                            <div class="form-group row">
+                            	<label for="NID" class="col-sm-3 col-form-label">National ID</label>
+    							<div class="col-sm-9">
+                                	<input type="text" name="loanNid" id="nid" tabindex="1" class="form-control" maxlength="95">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                            	<label for="Phone" class="col-sm-3 col-form-label">Phone</label>
+    							<div class="col-sm-9">
+                                	<input type="number" name="loanPhn" id="phone" tabindex="1" class="form-control" maxlength="20">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                            	<label for="Address" class="col-sm-3 col-form-label">Address</label>
+    							<div class="col-sm-9">
+                                	<input type="text" name="loanAddress" id="Address" tabindex="2" class="form-control" maxlength="30">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                            	<label for="Amount" class="col-sm-3 col-form-label">Amount</label>
+    							<div class="col-sm-9">
+                                	<input type="text" name="loanAmount" id="Amount" tabindex="2" class="form-control" maxlength="10">
+                                </div>
+                            </div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-danger" name="loanApply">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade" id="AMSWithdrawRequest" tabindex="-1" role="dialog" aria-labelledby="AMSModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="AMSModalLabel">Request for Withdraw</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form action="#" method="post">
+						<div class="modal-body">
+                            <div class="form-group row">
+                            	<label for="Amount" class="col-sm-2 col-form-label">Amount</label>
+    							<div class="col-sm-10">
+    								<input type="text" name="RequestAmount" id="Amount" tabindex="2" class="form-control" maxlength="10">
+    							</div>
+                            </div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-success" name="RequestWithdraw">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- <button onclick="amsFlashMessage()">Show Snackbar</button> -->
+		
 	</main>
 	<script src="asset/js/jquery-slim.min.js"></script>
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
+	<script>
+	function amsFlashMessage() {
+	    var x = document.getElementById("snackbar")
+	    x.className = "show";
+	    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	}
+	</script>
 </body>
 </html>
+<?php
+function validate_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+if (isset($_POST['loanApply'])) {
+	$name 			= validate_input($_POST['loanName']);
+	$nid 			= validate_input($_POST['loanNid']);
+	$phone 			= validate_input($_POST['loanPhn']);
+	$address 		= validate_input($_POST['loanAddress']);
+	$amount 		= validate_input($_POST['loanAmount']);
+	//echo $name . " : " . $nid . " : " . $phone . " : " . $address . " : " . $amount;
+	if (!empty($name) || !empty($nid) || !empty($phone) || !empty($address) || !empty($amount)) {
+		$loanQuery = "INSERT INTO `loan_apply`(`id`, `username`, `name`, `nid`, `phone`, `address`, `amount`) VALUES (NULL,'$username','$name','$nid','$phone','$address','$amount')";
+		$loanResult = mysqli_query($conn, $loanQuery);
+		if ($loanResult) {
+			echo '<div id="snackbar">Loan apply successful..</div>';
+			echo "<script>amsFlashMessage()</script>";
+		}
+	} else {
+		echo '<div id="snackbar">All fields are required.</div>';
+		echo "<script>amsFlashMessage()</script>";
+	}
+}
+if (isset($_POST['RequestAmount'])) {
+	$Requestamount 	= validate_input($_POST['RequestAmount']);
+	if (($userMoney-500) >= $Requestamount) {
+		$RequestQuery 	= "UPDATE `user_data` SET `RequestWithdraw`='$Requestamount' WHERE `username` = '$username'";
+		$RequestResult 	= mysqli_query($conn, $RequestQuery);
+		if ($RequestResult) {
+			echo '<div id="snackbar">Withdraw request is pending.</div>';
+			echo "<script>amsFlashMessage()</script>";
+		}
+	} else {
+		echo '<div id="snackbar">Insufficient Balance.</div>';
+		echo "<script>amsFlashMessage()</script>";
+	}
+}
+?>

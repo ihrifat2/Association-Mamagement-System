@@ -109,6 +109,75 @@
 	height: 400px;
 	overflow-y: scroll;
 }
-.AMS_userDash{
-    padding-top: 5rem;
+.userWithdraw{
+    height: 470px;
+    overflow-y: scroll;
+}
+
+/* snackbar */
+
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    font-family: Segoe UI Emoji;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+
+#snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;} 
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;} 
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+.btn-text {
+    color: #fff;
+    background-color: #4957ed;
+    border-color: #4957ed;
+}
+.btn-text:hover {
+    color: #fff;
+    background-color: #1824ab;
+    border-color: #0a1157;
+}
+textarea {
+    width: 100%;
+    border-radius: 1px;
+}
+.amsMessageBody {
+    height: 373px;
+    overflow-y: scroll;
+}
+.amsMessageChat {
+    height: 531px;
+    overflow-y: scroll;
 }

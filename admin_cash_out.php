@@ -6,14 +6,14 @@ if (!$_SESSION['AMS_admin_login'] || isset($_GET['id']) == '') {
 	header('Location: index.php');
 	exit();
 }
-$username = $_SESSION['AMS_admin_login'];
 if (isset($_GET)) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
-    $sqlQuery = "SELECT `money` FROM `user_data` WHERE `id` = '$id'";
+    $sqlQuery = "SELECT `username`, `money` FROM `user_data` WHERE `id` = '$id'";
     $result= mysqli_query($conn, $sqlQuery);
     $rows = mysqli_fetch_assoc($result);
     if ($rows) {
         $userMoney = $rows['money'];
+        $userUsername = $rows['username'];
     }
 }
 if(isset($userMoney) == NULL){
@@ -34,38 +34,31 @@ if(isset($userMoney) == NULL){
 
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container">
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#AMSNavbar" aria-controls="AMSNavbar" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<div class="collapse navbar-collapse" id="navbarsExample07">
+			<div class="collapse navbar-collapse" id="AMSNavbar">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
-						<a class="nav-link" href="index.php"><?php echo $project_name; ?> <span class="sr-only">(current)</span></a>
+						<a class="nav-link" href="index.php">
+							<i class="fas fa-home"></i>
+							HOME
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="admin_loan.php">
+							Loan
+						</a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-md-0">
-					<?php
-					if (!$_SESSION['AMS_admin_login']) {
-						echo '
-						<li class="nav-item mr-2">
-							<a class="nav-link btn btn-outline-secondary text-light" href="admin_login.php">Admin Login</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="user_login.php">User Login</a>
-						</li>
-						';
-					} else {
-						echo '
-						<li class="nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="admin_dashboard.php">Dashboard</a>
-						</li>
-						<li class="ml-2 nav-item">
-							<a class="nav-link btn btn-outline-secondary text-light" href="logout.php">Logout</a>
-						</li>
-						';
-					}
-					?>
+					<li class="nav-item">
+						<a class="nav-link btn btn-outline-secondary text-light" href="admin_dashboard.php">Dashboard</a>
+					</li>
+					<li class="ml-2 nav-item">
+						<a class="nav-link btn btn-outline-secondary text-light" href="logout.php">Logout</a>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -82,7 +75,7 @@ if(isset($userMoney) == NULL){
 							<div class="form-group row">
 								<label for="currentStatus" class="col-sm-4 col-form-label">Current Amount</label>
 								<div class="col-sm-8">
-									<input type="number" readonly class="form-control-plaintext" id="currentStatus" value="<?php echo $userMoney ?>">
+									<input type="text" readonly class="form-control-plaintext" id="currentStatus" value="<?php echo $userMoney ?>">
 								</div>
 							</div>
 							<div class="form-group row">
@@ -103,17 +96,37 @@ if(isset($userMoney) == NULL){
 	<script src="asset/js/jquery-slim.min.js"></script>
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
+	<script>
+	function amsFlashMessage() {
+	    var x = document.getElementById("snackbar")
+	    x.className = "show";
+	    setTimeout(function(){
+	    	x.className = x.className.replace("show", "");
+	    	document.location='admin_dashboard.php';
+	    }, 3000);
+	}
+	</script>
 </body>
 </html>
 <?php
 if (isset($_POST['withdrawSub'])) {
 	$withdrawMoney = $_POST['withdraw'];
+	$withdrawMoney2 = $_POST['withdraw'];
+	$date = date('Y-m-d');
+	$t = date('H');
+	$t = $t + 4;
+	$time = $t . date(':i:s');
 	if ($withdrawMoney <= ($userMoney-500)) {
 		$withdrawMoney = $userMoney - $withdrawMoney;
-		$withdrawQuery = "UPDATE `user_data` SET `money`='$withdrawMoney' WHERE `id` = '$id'";
-		$withdrawResult = mysqli_query($conn, $withdrawQuery);
-		if ($withdrawResult) {
-			echo '<script>document.getElementById("success").innerHTML="Withdraw Successful."</script>';
+		$withdrawQuery1 = "UPDATE `user_data` SET `money`='$withdrawMoney' WHERE `id` = '$id'";
+		$withdrawQuery2 = "INSERT INTO `withdraw_status`(`id`, `username`, `beforeWithdraw`, `withdrawMoney`, `afterWithdraw`, `time`, `date`) VALUES (NULL,'$userUsername','$userMoney','$withdrawMoney2','$withdrawMoney','$time','$date')";
+		$withdrawResult1 = mysqli_query($conn, $withdrawQuery1);
+		$withdrawResult2 = mysqli_query($conn, $withdrawQuery2);
+		if ($withdrawResult1 && $withdrawResult2) {
+			echo '<div id="snackbar">Withdraw Successful.</div>';
+			echo "<script>amsFlashMessage()</script>";
+			// echo "<script>javascript:document.location='admin_dashboard.php'</script>";
+			
 	    }else{
 	        echo '<script>document.getElementById("error").innerHTML="Failed to Withdraw."</script>';
 		}
