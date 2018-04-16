@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 28, 2018 at 02:57 PM
+-- Generation Time: Apr 16, 2018 at 03:01 PM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 7.0.8
 
@@ -54,19 +54,6 @@ CREATE TABLE `ams_chat` (
   `receiver` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `ams_chat`
---
-
-INSERT INTO `ams_chat` (`id`, `sender`, `message`, `receiver`) VALUES
-(1, 'admin', 'Hello imran', 'imran'),
-(2, 'admin', 'hey peter', 'peter'),
-(3, 'imran', 'Hey admin', 'admin'),
-(4, 'imran', 'I want loan', 'admin'),
-(5, 'peter', 'hahaha', 'admin'),
-(6, 'admin', 'hihihi', 'peter'),
-(7, 'admin', 'okay', 'imran');
-
 -- --------------------------------------------------------
 
 --
@@ -84,14 +71,6 @@ CREATE TABLE `loan_apply` (
   `loanGiven` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `loan_apply`
---
-
-INSERT INTO `loan_apply` (`id`, `username`, `name`, `nid`, `phone`, `address`, `amount`, `loanGiven`) VALUES
-(1, 'imran', 'imran hadid', '123456789009876543', '3456789', 'dhaka, bangladesh', 55555, 5555),
-(2, 'peter', 'peter', '98765432345678998', '87654567', 'usa', 9999, 9999);
-
 -- --------------------------------------------------------
 
 --
@@ -101,18 +80,9 @@ INSERT INTO `loan_apply` (`id`, `username`, `name`, `nid`, `phone`, `address`, `
 CREATE TABLE `user_data` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `money` int(11) DEFAULT NULL,
-  `loan` int(11) DEFAULT NULL,
-  `RequestWithdraw` int(11) DEFAULT NULL
+  `money` int(11) NOT NULL,
+  `loan` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `user_data`
---
-
-INSERT INTO `user_data` (`id`, `username`, `money`, `loan`, `RequestWithdraw`) VALUES
-(1, 'imran', 11337, 5555, 10000),
-(2, 'peter', 1007, 9999, 500);
 
 -- --------------------------------------------------------
 
@@ -124,17 +94,12 @@ CREATE TABLE `user_info` (
   `id` int(11) NOT NULL,
   `userName` varchar(50) NOT NULL,
   `userEmail` varchar(50) NOT NULL,
+  `userPhone` varchar(20) NOT NULL,
+  `userPhoto` varchar(60) NOT NULL,
+  `userNid` varchar(60) NOT NULL,
   `userUsername` varchar(30) NOT NULL,
   `userPassword` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `user_info`
---
-
-INSERT INTO `user_info` (`id`, `userName`, `userEmail`, `userUsername`, `userPassword`) VALUES
-(1, 'imran hadid', 'imran@mail.com', 'imran', '$2y$10$Y8qRQn4RN6FVWH497k.LeOmsPX6Xm4pq76tVjXTrpf7vrBRB585mu'),
-(2, 'peter jhonson', 'peter@mail.com', 'peter', '$2y$10$y8c3QJEBVVNjW7ic..mID.s51.lcl1rC8gfMvp49qsM3ra3xHFcwO');
 
 -- --------------------------------------------------------
 
@@ -151,14 +116,6 @@ CREATE TABLE `withdraw_status` (
   `time` varchar(8) NOT NULL,
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `withdraw_status`
---
-
-INSERT INTO `withdraw_status` (`id`, `username`, `beforeWithdraw`, `withdrawMoney`, `afterWithdraw`, `time`, `date`) VALUES
-(1, 'peter', '1337', '330', '1007', '18:42:32', '2018-03-28'),
-(2, 'imran', '31337', '20000', '11337', '18:45:42', '2018-03-28');
 
 --
 -- Indexes for dumped tables
@@ -213,12 +170,12 @@ ALTER TABLE `admin_info`
 -- AUTO_INCREMENT for table `ams_chat`
 --
 ALTER TABLE `ams_chat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `loan_apply`
 --
 ALTER TABLE `loan_apply`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `user_data`
 --
@@ -233,7 +190,7 @@ ALTER TABLE `user_info`
 -- AUTO_INCREMENT for table `withdraw_status`
 --
 ALTER TABLE `withdraw_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

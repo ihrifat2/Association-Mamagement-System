@@ -16,6 +16,12 @@ if (!$_SESSION['AMS_admin_login']) {
 	<link rel="stylesheet" href="asset/css/style.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css">
+	<style>
+		.userPhoto{
+			cursor: zoom-in;
+			width: 45px;
+		}
+	</style>
 </head>
 <body class="text-center">
 
@@ -33,11 +39,6 @@ if (!$_SESSION['AMS_admin_login']) {
 							HOME
 						</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="admin_loan.php">
-							Loan
-						</a>
-					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-md-0">
 					<li class="nav-item">
@@ -52,7 +53,7 @@ if (!$_SESSION['AMS_admin_login']) {
 	</nav>
 	<?php
 		$data = array();
-		$sqlquery = "SELECT `id`, `userName`, `userEmail`, `userUsername` FROM `user_info`";
+		$sqlquery = "SELECT * FROM `user_info` INNER JOIN `user_data` ON `user_info`.`userUsername` = `user_data`.`username`";
 		if ($result = $conn->query($sqlquery)) {
 			while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
 				$data[] = $rows;
@@ -63,20 +64,47 @@ if (!$_SESSION['AMS_admin_login']) {
 	?>
 	<main role="main" class="container-fluid">
 
+		<div class="modal fade" id="enlargeImageModal" tabindex="-1" role="dialog" aria-labelledby="enlargeImageModal" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+					</div>
+					<div class="modal-body">
+						<img src="" class="enlargeImageModalSource" style="width: 60%;">
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="row">
-			<div class="col-md-5 mt-4">
+			<div class="col-md-2 mt-4">
+				<ul class="list-group">
+					<a href="#" class="list-group-item list-group-item-action">Admin Registration</a>
+					<a href="admin_loan.php" class="list-group-item list-group-item-action">Loan Request</a>
+				</ul>
+			</div>
+			<div class="col-md-10 mt-4">
 				<div class="card">
 					<div class="card-header">
-						<h3>User List</h3>
+						<h3>User Details</h3>
 					</div>
 					<div class="card-body depoMoney">
-						<table class="table table-hover">
+						<table class="table table-hover table-sm table-bordered table-striped">
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th>Email</th>
-									<th>Message</th>
-									<th>Action</th>
+									<th scope="col">Photo</th>
+									<th scope="col">Name</th>
+									<th scope="col">Email</th>
+									<th scope="col">Phone</th>
+									<th scope="col">NID Card</th>
+									<th scope="col">Amount</th>
+									<th scope="col" colspan="2">Loan</th>
+									<th scope="col">Cash IN</th>
+									<th scope="col">Cash OUT</th>
+									<th scope="col">Message</th>
+									<th scope="col">Action</th>
+									<th scope="col">More Details</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -84,16 +112,37 @@ if (!$_SESSION['AMS_admin_login']) {
 
 								foreach ($data as $row) {
 									echo "<tr>";
+									echo '<td><img class="userPhoto" src="asset/img/userphoto/'.$row['userPhoto'].'" alt="'.ucfirst($row['userName']).'"></td>';
 									echo "<td>" . ucfirst($row['userName']) . "</td>";
 									echo "<td>" . $row['userEmail'] . "</td>";
+									echo "<td>" . $row['userPhone'] . "</td>";
+									echo '<td><img class="userPhoto" src="asset/img/usernid/'.$row['userNid'].'" alt=""></td>';
+									echo "<td>" . $row['money'] . "</td>";
+									echo "<td>" . $row['loan'] . "</td>";
+									echo '
+										<td>
+											<a href="admin_loan_process.php?id='.$row['id'].'" class="btn btn-primary">
+												<i class="fas fa-chevron-circle-right"></i>
+											</a>
+										</td>
+									';
+									echo '
+										<td>
+											<a href="admin_cash_in.php?id='.$row['id'].'" class="btn btn-success">
+												<i class="fas fa-plus"></i>
+											</a>
+										</td>
+										<td>
+											<a href="admin_cash_out.php?id='.$row['id'].'" class="btn btn-warning">
+												<i class="fas fa-minus"></i>
+											</a>
+										</td>
+									';
 									echo '<td>
 										<a href="admin_message.php?name='.$row['userUsername'].'" class="btn btn-text">
 											<i class="fas fa-paper-plane"></i>
 										</a>
 									</td>';
-									// <a href="admin_edit.php?id='.$row['id'].'" class="btn btn-info">
-									// 		<i class="fas fa-edit"></i>
-									// 	</a>
 									echo '
 									<td>
 										<button type="button" id="userDelete" class="btn btn-danger" onclick="userRemove('.$row['id'].')" data-toggle="modal" data-target="#AMSModal">
@@ -101,6 +150,7 @@ if (!$_SESSION['AMS_admin_login']) {
 										</button>
 									</td>
 									';
+									echo "<td></td>";
 									echo "</tr>";
 								}
 
@@ -110,65 +160,10 @@ if (!$_SESSION['AMS_admin_login']) {
 					</div>
 				</div>
 			</div>
-			<?php
-
-				$data = array();
-				$sqlquery = "SELECT * FROM `user_data`";
-				if ($result = $conn->query($sqlquery)) {
-					while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
-						$data[] = $rows;
-					}
-					$result->close();
-				}
-				//$conn->close();
-			
-			?>
-			<div class="col-md-7 mt-4">
-				<div class="card">
-					<div class="card-header">
-						<h3>User Details</h3>
-					</div>
-					<div class="card-body depoMoney">
-						<table class="table table-hover table-bordered">
-							<thead>
-								<tr>
-									<th>Name</th>
-									<th>Amount</th>
-									<th>Loan</th>
-									<th>Cash IN</th>
-									<th>Cash OUT</th>
-									<th>Withdraw Request</th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-
-									foreach ($data as $row) {
-										echo "<tr>";
-										echo "<td>" . ucfirst($row['username']) . "</td>";
-										echo "<td>" . $row['money'] . "</td>";
-										echo "<td>" . $row['loan'] . "</td>";
-										echo '
-											<td>
-												<a href="admin_cash_in.php?id='.$row['id'].'" class="btn btn-success">
-													<i class="fas fa-plus"></i>
-												</a>
-											</td>
-											<td>
-												<a href="admin_cash_out.php?id='.$row['id'].'" class="btn btn-warning">
-													<i class="fas fa-minus"></i>
-												</a>
-											</td>
-										';
-										echo "<td class='text-danger font-weight-bold'>" . $row['RequestWithdraw'] . "</td>";
-										echo "</tr>";
-									}
-
-								?>
-							</tbody>
-						</table>
-					</div>
-				</div>
+			<div id="myModal" class="modal">
+				<span class="close">&times;</span>
+				<img class="modal-content" id="img01">
+				<div id="caption"></div>
 			</div>
 		</div>
 
@@ -202,6 +197,12 @@ if (!$_SESSION['AMS_admin_login']) {
     	function userRemove(id){
     		document.cookie="deleteUserId="+id;
     	}
+    	$(function() {
+	    	$('img').on('click', function() {
+				$('.enlargeImageModalSource').attr('src', $(this).attr('src'));
+				$('#enlargeImageModal').modal('show');
+			});
+		});
     </script>
 </body>
 </html>

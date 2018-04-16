@@ -93,11 +93,8 @@ if ($userData) {
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-6">
+					<div class="col">
 						<button type="button" class="btn btn-outline-info mt-4 float-left" data-toggle="modal" data-target="#AMSloanApply">Loan Apply</button>
-					</div>
-					<div class="col-sm-6">
-						<button type="button" class="btn btn-outline-info mt-4 float-right" data-toggle="modal" data-target="#AMSWithdrawRequest">Withdraw Request</button>
 					</div>
 				</div>
 			</div>
@@ -201,34 +198,6 @@ if ($userData) {
 			</div>
 		</div>
 
-		<!-- Modal -->
-		<div class="modal fade" id="AMSWithdrawRequest" tabindex="-1" role="dialog" aria-labelledby="AMSModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="AMSModalLabel">Request for Withdraw</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<form action="#" method="post">
-						<div class="modal-body">
-                            <div class="form-group row">
-                            	<label for="Amount" class="col-sm-2 col-form-label">Amount</label>
-    							<div class="col-sm-10">
-    								<input type="text" name="RequestAmount" id="Amount" tabindex="2" class="form-control" maxlength="10">
-    							</div>
-                            </div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-							<button type="submit" class="btn btn-success" name="RequestWithdraw">Submit</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-
 		<!-- <button onclick="amsFlashMessage()">Show Snackbar</button> -->
 		
 	</main>
@@ -267,20 +236,6 @@ if (isset($_POST['loanApply'])) {
 		}
 	} else {
 		echo '<div id="snackbar">All fields are required.</div>';
-		echo "<script>amsFlashMessage()</script>";
-	}
-}
-if (isset($_POST['RequestAmount'])) {
-	$Requestamount 	= validate_input($_POST['RequestAmount']);
-	if (($userMoney-500) >= $Requestamount) {
-		$RequestQuery 	= "UPDATE `user_data` SET `RequestWithdraw`='$Requestamount' WHERE `username` = '$username'";
-		$RequestResult 	= mysqli_query($conn, $RequestQuery);
-		if ($RequestResult) {
-			echo '<div id="snackbar">Withdraw request is pending.</div>';
-			echo "<script>amsFlashMessage()</script>";
-		}
-	} else {
-		echo '<div id="snackbar">Insufficient Balance.</div>';
 		echo "<script>amsFlashMessage()</script>";
 	}
 }

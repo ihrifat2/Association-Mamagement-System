@@ -76,12 +76,27 @@ session_start();
                                     </div>
                                 </form>
                                 
-                                <form id="admin_login" action="#" method="post" role="form" style="display: none;" autocomplete="off">
+                                <form id="admin_login" action="#" method="post" role="form" style="display: none;" autocomplete="off" enctype="multipart/form-data">
                                     <div class="form-group">
                                         <input type="text" name="userRegName" id="name" tabindex="1" class="form-control" placeholder="Name" maxlength="50">
                                     </div>
                                     <div class="form-group">
                                         <input type="email" name="userRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" maxlength="50">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="userRegPhone" id="phone" tabindex="1" class="form-control" placeholder="Phone" maxlength="50">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-md">
+                                            <span class="input-group-addon" id="photo">Photo</span>
+                                            <input type="file" class="form-control" name="userRegPhoto">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-md">
+                                            <span class="input-group-addon" id="nid">NID</span>
+                                            <input type="file" class="form-control" name="userRegNID">
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <input type="text" name="userRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" maxlength="30">
@@ -167,31 +182,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userLogin'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
     $userName              = validate_input($_POST['userRegName']);
-    $userUsername          = validate_input($_POST['userRegUsername']);
     $userEmail             = validate_input($_POST['userRegEmail']);
+    $userPhone             = validate_input($_POST['userRegPhone']);
+    $userUsername          = validate_input($_POST['userRegUsername']);
     $userPassword          = validate_input($_POST['userRegPassword']);
     $userConPassword       = validate_input($_POST['userRegConpassword']);
+
+    /*User Photo*/
+    $userPhoto_dir = "asset/img/userphoto/";
+    $userPhoto_name = md5( $userUsername . ":" . $userPassword ) . '.' . 'jpg';
+    $userPhoto_tmp  = $_FILES[ 'userRegPhoto' ][ 'tmp_name' ];
+    $userPhoto_type = strtolower(pathinfo($userPhoto_name,PATHINFO_EXTENSION));
+
+
+    /*User NID Card*/
+    $userNid_dir = "asset/img/usernid/";
+    $userNid_name = md5( $userEmail . ":" . $userPhone ) . '.' . 'jpg';
+    $userNid_tmp  = $_FILES[ 'userRegNID' ][ 'tmp_name' ];
+    $userNid_type = strtolower(pathinfo($userNid_name,PATHINFO_EXTENSION));
+    
+    echo $userPhoto_name . " : " . $userPhoto_tmp . " : " . $userPhoto_type;
+    echo "<br>";
+    echo $userNid_name . " : " . $userNid_tmp . " : " . $userNid_type;
+
     //echo $userUsername . " : " . $userEmail . " : " . $userPassword . " : " . $userConPassword;
-    if (empty($userName) || empty($userUsername) || empty($userEmail) || empty($userPassword) || empty($userConPassword)) {
+    
+    if (empty($userName) || empty($userEmail) || empty($userPhone) || empty($userUsername) || empty($userPassword) || empty($userConPassword)) {
         echo '<script>document.getElementById("error").innerHTML="All fields are required."</script>';
     } else {
         if ($userPassword != $userConPassword) {
             echo '<script>document.getElementById("error").innerHTML="Password not matched."</script>';
         } else {
             if (filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
-                $userPassword = password_hash($userConPassword, PASSWORD_BCRYPT);
-                $money = 0;
-                $loan = 0;
-                $RequestWithdraw = 0;
-                $userRegQuery1 = "INSERT INTO `user_info`(`id`, `userName`, `userEmail`, `userUsername`, `userPassword`) VALUE (NULL, '$userName', '$userEmail', '$userUsername', '$userPassword')";
-                $userRegQuery2 = "INSERT INTO `user_data`(`id`, `username`, `money`, `loan`, `RequestWithdraw`) VALUES (NULL, '$userUsername', '$money', '$loan', '$RequestWithdraw')";
-                $userRegResult1 = mysqli_Query($conn, $userRegQuery1);
-                $userRegResult2 = mysqli_Query($conn, $userRegQuery2);
-                if ($userRegResult1 && $userRegResult2) {
-                    echo '<script>document.getElementById("success").innerHTML="Successfully Registered."</script>';
-                }else{
-                    echo '<script>document.getElementById("error").innerHTML="Registered Failed."</script>';
-                    echo mysqli_error($conn);
+                if (move_uploaded_file($userPhoto_tmp, $userPhoto_dir . $userPhoto_name) && move_uploaded_file($userNid_tmp, $userNid_dir . $userNid_name)) {
+                    $userPassword = password_hash($userConPassword, PASSWORD_BCRYPT);
+                    $money = 0;
+                    $loan = 0;
+                    $userRegQuery1 = "INSERT INTO `user_info`(`id`, `userName`, `userEmail`, `userPhone`, `userPhoto`, `userNid`, `userUsername`, `userPassword`) VALUE (NULL, '$userName', '$userEmail', '$userPhone', '$userPhoto_name', '$userNid_name', '$userUsername', '$userPassword')";
+                    $userRegQuery2 = "INSERT INTO `user_data`(`id`, `username`, `money`, `loan`) VALUES (NULL, '$userUsername', '$money', '$loan')";
+                    $userRegResult1 = mysqli_Query($conn, $userRegQuery1);
+                    $userRegResult2 = mysqli_Query($conn, $userRegQuery2);
+                    if ($userRegResult1 && $userRegResult2) {
+                        echo '<script>document.getElementById("success").innerHTML="Successfully Registered."</script>';
+                    }else{
+                        echo '<script>document.getElementById("error").innerHTML="Registered Failed."</script>';
+                        echo mysqli_error($conn);
+                    }
+                } else {
+                    echo '<script>document.getElementById("error").innerHTML="Photo Upload Failed."</script>';
                 }
             } else {
                 echo '<script>document.getElementById("error").innerHTML="Email address is not valid."</script>';

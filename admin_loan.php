@@ -35,7 +35,7 @@ if (!$_SESSION['AMS_admin_login']) {
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="admin_loan.php">
-							Loan
+							Loan Request
 						</a>
 					</li>
 				</ul>
