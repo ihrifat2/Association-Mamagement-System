@@ -122,8 +122,8 @@ if ($userData) {
 									<th>Before Withdraw</th>
 									<th>Withdraw Amount</th>
 									<th>After Withdraw</th>
-									<th>Time</th>
 									<th>Date</th>
+									<th>Time</th>
 								</tr>
 							</thead>
 							<tbody>

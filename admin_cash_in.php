@@ -8,17 +8,17 @@ if (!$_SESSION['AMS_admin_login'] || isset($_GET['id']) == '') {
 }
 if (isset($_GET)) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
-    $sqlQuery = "SELECT `money` FROM `user_data` WHERE `id` = '$id'";
+    $sqlQuery = "SELECT `username`, `money` FROM `user_data` WHERE `id` = '$id'";
     $result= mysqli_query($conn, $sqlQuery);
     $rows = mysqli_fetch_assoc($result);
     if ($rows) {
         $userMoney = $rows['money'];
+        $userUsername = $rows['username'];
     }
 }
 if(isset($userMoney) == NULL){
     header('location: error.php');
 }
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -47,7 +47,7 @@ if(isset($userMoney) == NULL){
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="admin_loan.php">
-							Loan
+							Loan Request
 						</a>
 					</li>
 				</ul>
@@ -96,29 +96,47 @@ if(isset($userMoney) == NULL){
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
-	function amsFlashMessage() {
-	    var x = document.getElementById("snackbar")
-	    x.className = "show";
-	    setTimeout(function(){
-	    	x.className = x.className.replace("show", "");
-	    	document.location='admin_dashboard.php';
-	    }, 3000);
-	}
+		function amsFlashRedirect() {
+		    var x = document.getElementById("snackbar")
+		    x.className = "show";
+		    setTimeout(function(){
+		    	x.className = x.className.replace("show", "");
+		    	document.location='admin_dashboard.php';
+		    }, 3000);
+		}
+		function amsFlashMessage() {
+		    var x = document.getElementById("snackbar")
+		    x.className = "show";
+		    setTimeout(function(){
+		    	x.className = x.className.replace("show", "");
+		    }, 3000);
+		}
 	</script>
 </body>
 </html>
 <?php
 if (isset($_POST['depositSub'])) {
 	$depoMoney = $_POST['deposit'];
-	$depoMoney += $userMoney;
-	$depoQuery = "UPDATE `user_data` SET `money`='$depoMoney' WHERE `id` = '$id'";
-	$depoResult = mysqli_query($conn, $depoQuery);
-	if ($depoResult) {
-		echo '<div id="snackbar">Deposit Successful.</div>';
+	$depoMoney2 = $depoMoney;
+	if ($depoMoney <= 500 && $depoMoney >= 100) {
+		$depoMoney += $userMoney;
+		$date = date('Y-m-d');
+		$depoQuery = "UPDATE `user_data` SET `money`='$depoMoney' WHERE `id` = '$id'";
+		$depoQuery2 = "INSERT INTO `ams_deposit`(`id`, `username`, `depositMoney`, `totalMoney`, `date`) VALUES (NULL, '$userUsername', '$depoMoney2', '$depoMoney', '$date')";
+		$depoResult = mysqli_query($conn, $depoQuery);
+		$depoResult2 = mysqli_query($conn, $depoQuery2);
+		if ($depoResult && $depoResult2) {
+			echo '<div id="snackbar">Deposit Successful.</div>';
+			echo "<script>amsFlashRedirect()</script>";
+			// echo "<script>javascript:document.location='admin_dashboard.php'</script>";
+	    }else{
+	    	echo '<div id="snackbar">Failed to Deposit.</div>';
+	    	echo "<script>amsFlashMessage()</script>";
+	        // echo '<script>document.getElementById("error").innerHTML="Failed to Deposit."</script>';
+		}
+	} else {
+		echo '<div id="snackbar">Deposit money between 100 to 500.</div>';
 		echo "<script>amsFlashMessage()</script>";
-		// echo "<script>javascript:document.location='admin_dashboard.php'</script>";
-    }else{
-        echo '<script>document.getElementById("error").innerHTML="Failed to Deposit."</script>';
 	}
 }
 ?>

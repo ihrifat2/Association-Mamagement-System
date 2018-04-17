@@ -13,7 +13,6 @@ session_start();
     <link rel="stylesheet" type="text/css" href="asset/css/style.css">
 </head>
 <body>
-
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -43,20 +42,13 @@ session_start();
             <div class="col-md-6 col-md-offset-3">
                 <div class="panel panel-login">
                     <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <a href="#" class="active" id="login-form-link">Admin Login</a>
-                            </div>
-                            <div class="col-xs-6">
-                                <a href="#" id="admin_login-link">Admin Registration</a>
-                            </div>
-                        </div>
+                        <p class="admin_login">Admin Login</p>
                         <hr>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-12">
-                                <form id="login-form" action="#" method="post" role="form" style="display: block;" autocomplete="off">
+                                <form action="#" method="post" role="form" autocomplete="off">
                                     <div class="form-group">
                                         <input type="text" name="adminLogUname" id="username" tabindex="1" class="form-control" placeholder="Username" maxlength="">
                                     </div>
@@ -75,31 +67,6 @@ session_start();
                                         <p id="success" class="success"></p>
                                     </div>
                                 </form>
-                                
-                                <form id="admin_login" action="#" method="post" role="form" style="display: none;" autocomplete="off">
-                                    <div class="form-group">
-                                        <input type="text" name="adminRegName" id="name" tabindex="1" class="form-control" placeholder="Name" maxlength="50">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="email" name="adminRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" maxlength="50">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" name="adminRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" maxlength="30">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" name="adminRegPassword" id="regpassword" tabindex="2" class="form-control" placeholder="Password" maxlength="50">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" name="adminRegConpassword" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password" maxlength="50">
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-sm-6 col-sm-offset-3">
-                                                <input type="submit" name="adminRegistration" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Registration">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -107,44 +74,19 @@ session_start();
             </div>
         </div>
     </div>
-
     <script src="asset/js/jquery-slim.min.js"></script>
     <script src="asset/js/popper.min.js"></script>
     <script src="asset/js/bootstrap.min.js"></script>
     <script src="asset/js/jquery-3.3.1.min.js"></script>
-
-    <script type="text/javascript">
-        $(function() {
-
-            $('#login-form-link').click(function(e) {
-                $("#login-form").delay(100).fadeIn(100);
-                $("#admin_login").fadeOut(100);
-                $('#admin_login-link').removeClass('active');
-                $(this).addClass('active');
-                e.preventDefault();
-            });
-            $('#admin_login-link').click(function(e) {
-                $("#admin_login").delay(100).fadeIn(100);
-                $("#login-form").fadeOut(100);
-                $('#login-form-link').removeClass('active');
-                $(this).addClass('active');
-                e.preventDefault();
-            });
-
-        });
-    </script>
 </body>
 </html>
-
 <?php
-
 function validate_input($data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
 }
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminLogin'])) {
     $username = $_POST['adminLogUname'];
     $password = $_POST['adminLogPasswd'];
@@ -165,35 +107,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminLogin'])) {
         }
     }
 } 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminRegistration'])) {
-    $adminName              = validate_input($_POST['adminRegName']);
-    $adminUsername          = validate_input($_POST['adminRegUsername']);
-    $adminEmail             = validate_input($_POST['adminRegEmail']);
-    $adminPassword          = validate_input($_POST['adminRegPassword']);
-    $adminConPassword       = validate_input($_POST['adminRegConpassword']);
-    if (empty($adminName) || empty($adminUsername) || empty($adminEmail) || empty($adminPassword) || empty($adminConPassword)) {
-        echo '<script>document.getElementById("error").innerHTML="All fields are required."</script>';
-    } else {
-        if ($adminPassword != $adminConPassword) {
-            echo '<script>document.getElementById("error").innerHTML="Password not matched."</script>';
-        } else {
-            if (filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
-                $adminPassword = password_hash($adminConPassword, PASSWORD_BCRYPT);
-                //echo "<br>" . $adminPassword;
-                $adminRegQuery = "INSERT INTO `admin_info`(`id`, `adminName`, `adminEmail`, `adminUsername`, `adminPassword`) VALUE (NULL, '$adminName', '$adminEmail', '$adminUsername', '$adminPassword')";
-                $adminRegResult = mysqli_Query($conn, $adminRegQuery);
-                if ($adminRegResult) {
-                    echo '<script>document.getElementById("success").innerHTML="Successfully Registered."</script>';
-                }else{
-                    echo '<script>document.getElementById("error").innerHTML="Registered Failed."</script>';
-                    //echo mysqli_error($conn);
-                }
-            } else {
-                echo '<script>document.getElementById("error").innerHTML="Email address is not valid."</script>';
-            }
-        }
-    }
-}
-
 ?>
-

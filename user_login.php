@@ -201,10 +201,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
     $userNid_tmp  = $_FILES[ 'userRegNID' ][ 'tmp_name' ];
     $userNid_type = strtolower(pathinfo($userNid_name,PATHINFO_EXTENSION));
     
-    echo $userPhoto_name . " : " . $userPhoto_tmp . " : " . $userPhoto_type;
-    echo "<br>";
-    echo $userNid_name . " : " . $userNid_tmp . " : " . $userNid_type;
-
+    // echo $userPhoto_name . " : " . $userPhoto_tmp . " : " . $userPhoto_type;
+    // echo "<br>";
+    // echo $userNid_name . " : " . $userNid_tmp . " : " . $userNid_type;
     //echo $userUsername . " : " . $userEmail . " : " . $userPassword . " : " . $userConPassword;
     
     if (empty($userName) || empty($userEmail) || empty($userPhone) || empty($userUsername) || empty($userPassword) || empty($userConPassword)) {

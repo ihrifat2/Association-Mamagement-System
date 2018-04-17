@@ -53,6 +53,11 @@
     box-shadow: none;
     border-color: #ccc;
 }
+.admin_login {
+    color: #029f5b;
+    font-size: 18px;
+    font-weight: bold;
+}
 .btn-login {
     background-color: #59B2E0;
     outline: none;
@@ -106,7 +111,7 @@
     font-weight: bold;
 }
 .card-body.depoMoney{
-	height: 400px;
+	height: 535px;
 	overflow-y: scroll;
 }
 .userWithdraw{

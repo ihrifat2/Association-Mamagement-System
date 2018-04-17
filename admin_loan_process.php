@@ -1,17 +1,18 @@
 <?php
 require 'config.php';
 session_start();
-if (!$_SESSION['AMS_admin_login'] || isset($_GET['id']) == '') {
+if (!$_SESSION['AMS_admin_login'] || isset($_GET['name']) == '') {
 	header('Location: index.php');
 	exit();
 }
+$name = mysqli_real_escape_string($conn, $_GET['name']);
 if (isset($_GET)) {
-    $id = mysqli_real_escape_string($conn, $_GET['id']);
-    $sqlQuery = "SELECT `money` FROM `user_data` WHERE `id` = '$id'";
+    $sqlQuery = "SELECT `money` FROM `user_data` WHERE `username` = '$name'";
     $result= mysqli_query($conn, $sqlQuery);
     $rows = mysqli_fetch_assoc($result);
     if ($rows) {
         $userMoney = $rows['money'];
+        $userLoan = $rows['loan'];
     }
 }
 if(isset($userMoney) == NULL){
@@ -61,13 +62,45 @@ if(isset($userMoney) == NULL){
         </div>
     </nav>
     <main role="main" class="container">
-        <div class="row justify-content-md-center border border-warning mt-3">
-            <div class="col-sm-3 border border-danger">1</div>
-            <div class="col-sm-3 border border-danger">2</div>
-            <div class="col-sm-3 border border-danger">3</div>
-            <div class="col-sm-3 border border-danger">4</div>
+        <div class="row mt-2">
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header bg-secondary">
+                        <h3>Loan Repayment</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="form-group row">
+                                <label for="inputInstalment" class="col-sm-5 col-form-label">Instalment Number</label>
+                                <div class="col-sm-7">
+                                    <input type="number" class="form-control" name="instalmentSerial" id="inputInstalment" placeholder="Number of Instalment">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputAmount" class="col-sm-5 col-form-label">Amount</label>
+                                <div class="col-sm-7">
+                                    <input type="number" class="form-control" name="instalmentAmount" id="inputAmount" placeholder="Amount">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-outline-success float-right" name="btn_instalment">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h3>Loan Table</h3>
+                    </div>
+                    <div class="card-body"></div>
+                </div>
             </div>
         </div>
     </main>
 </body>
 </html>
+<?php
+    if (isset($_POST['btn_instalment'])) {
+        
+    }
+?>
