@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 16, 2018 at 03:01 PM
+-- Generation Time: Apr 17, 2018 at 03:39 PM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 7.0.8
 
@@ -39,7 +39,8 @@ CREATE TABLE `admin_info` (
 --
 
 INSERT INTO `admin_info` (`id`, `adminName`, `adminEmail`, `adminUsername`, `adminPassword`) VALUES
-(1, 'admin', 'admin@mail.com', 'admin', '$2y$10$kL.jNZTKrLUQqa.TmMk9CuTtKUbkUlK8ir7czZu2FR9bRQd3zuqrO');
+(1, 'admin', 'admin@mail.com', 'admin', '$2y$10$kL.jNZTKrLUQqa.TmMk9CuTtKUbkUlK8ir7czZu2FR9bRQd3zuqrO'),
+(2, 'imran', 'imran@gmail.com', 'imran', '$2y$10$nYQlsr48VQ0IJ/p2K2XktO5FHNk7bMJlLIubtVKjoEnfzMwdoZL.2');
 
 -- --------------------------------------------------------
 
@@ -53,6 +54,57 @@ CREATE TABLE `ams_chat` (
   `message` mediumtext NOT NULL,
   `receiver` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ams_deposit`
+--
+
+CREATE TABLE `ams_deposit` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `depositMoney` int(11) NOT NULL,
+  `totalMoney` int(11) NOT NULL,
+  `date` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ams_deposit`
+--
+
+INSERT INTO `ams_deposit` (`id`, `username`, `depositMoney`, `totalMoney`, `date`) VALUES
+(1, 'imran', 200, 1245, '2018-04-16'),
+(2, 'imran', 100, 1345, '2018-04-16'),
+(3, 'imran', 400, 1745, '2018-04-16'),
+(4, 'imran', 200, 1945, '2018-04-17'),
+(5, 'imran', 155, 2100, '2018-04-17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ams_loan`
+--
+
+CREATE TABLE `ams_loan` (
+  `id` int(11) NOT NULL,
+  `username` varchar(30) NOT NULL,
+  `loan_Amount` int(11) NOT NULL,
+  `weeklyInstallment` int(11) NOT NULL,
+  `paid_Amount` int(11) NOT NULL,
+  `present_Amount` int(11) NOT NULL,
+  `date` varchar(20) NOT NULL,
+  `week` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ams_loan`
+--
+
+INSERT INTO `ams_loan` (`id`, `username`, `loan_Amount`, `weeklyInstallment`, `paid_Amount`, `present_Amount`, `date`, `week`) VALUES
+(6, 'imran', 10000, 230, 230, 9770, '2018-04-17', 1),
+(7, 'imran', 10000, 230, 230, 9540, '2018-04-17', 2),
+(8, 'imran', 10000, 230, 230, 9310, '2018-04-17', 3);
 
 -- --------------------------------------------------------
 
@@ -71,6 +123,13 @@ CREATE TABLE `loan_apply` (
   `loanGiven` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `loan_apply`
+--
+
+INSERT INTO `loan_apply` (`id`, `username`, `name`, `nid`, `phone`, `address`, `amount`, `loanGiven`) VALUES
+(1, 'imran', 'imran hadid', '1234567890984', '234567890', 'dhaka, bangladesh', 10000, 10000);
+
 -- --------------------------------------------------------
 
 --
@@ -81,8 +140,16 @@ CREATE TABLE `user_data` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `money` int(11) NOT NULL,
-  `loan` int(11) NOT NULL
+  `loan` int(11) NOT NULL,
+  `loanInterest` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_data`
+--
+
+INSERT INTO `user_data` (`id`, `username`, `money`, `loan`, `loanInterest`) VALUES
+(1, 'imran', 2100, 10000, 2000);
 
 -- --------------------------------------------------------
 
@@ -101,6 +168,13 @@ CREATE TABLE `user_info` (
   `userPassword` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `user_info`
+--
+
+INSERT INTO `user_info` (`id`, `userName`, `userEmail`, `userPhone`, `userPhoto`, `userNid`, `userUsername`, `userPassword`) VALUES
+(1, 'Imran hadid', 'imran@gmail.com', '123456789', 'c5459f6cd31085b017f5fa0d3809c3a7.jpg', 'fd75165079d85ba03ce1a92ca78b0e7a.jpg', 'imran', '$2y$10$vume/frp3HBgYuBL6QxZm.64rNrn6jJMGcUwZInRCF/MpHgENRK4m');
+
 -- --------------------------------------------------------
 
 --
@@ -118,6 +192,15 @@ CREATE TABLE `withdraw_status` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Dumping data for table `withdraw_status`
+--
+
+INSERT INTO `withdraw_status` (`id`, `username`, `beforeWithdraw`, `withdrawMoney`, `afterWithdraw`, `time`, `date`) VALUES
+(1, 'imran', '1111', '11', '1100', '24:07:12', '2018-04-16'),
+(2, 'imran', '1100', '22', '1078', '24:07:20', '2018-04-16'),
+(3, 'imran', '1078', '33', '1045', '24:07:26', '2018-04-16');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -131,6 +214,18 @@ ALTER TABLE `admin_info`
 -- Indexes for table `ams_chat`
 --
 ALTER TABLE `ams_chat`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ams_deposit`
+--
+ALTER TABLE `ams_deposit`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ams_loan`
+--
+ALTER TABLE `ams_loan`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -165,32 +260,42 @@ ALTER TABLE `withdraw_status`
 -- AUTO_INCREMENT for table `admin_info`
 --
 ALTER TABLE `admin_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `ams_chat`
 --
 ALTER TABLE `ams_chat`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `ams_deposit`
+--
+ALTER TABLE `ams_deposit`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+--
+-- AUTO_INCREMENT for table `ams_loan`
+--
+ALTER TABLE `ams_loan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+--
 -- AUTO_INCREMENT for table `loan_apply`
 --
 ALTER TABLE `loan_apply`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `user_data`
 --
 ALTER TABLE `user_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `user_info`
 --
 ALTER TABLE `user_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `withdraw_status`
 --
 ALTER TABLE `withdraw_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

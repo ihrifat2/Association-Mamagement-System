@@ -171,13 +171,19 @@ if (!$_SESSION['AMS_admin_login']) {
 </body>
 </html>
 <?php
+function interestCount($loanMoney)
+{
+    $interestMoney = ($loanMoney * 20) / 100;
+    return $interestMoney;
+}
 if (isset($_POST['RequestLoan'])) {
 	$requestLoanUserId = $_COOKIE['requestLoanUserId'];
 	$requestLoanUserUname = $_COOKIE['requestLoanUserUname'];
 	$LoanApprovalMoney = $_POST['RequestLoanAmount'];
+	$loanInterest = interestCount($LoanApprovalMoney);
 	if (!empty($LoanApprovalMoney)) {
 		$LoanApprovalQuary = "UPDATE `loan_apply` SET `loanGiven`='$LoanApprovalMoney' WHERE `id` = '$requestLoanUserId'";
-		$LoanApprovalQuary2 = "UPDATE `user_data` SET `loan`='$LoanApprovalMoney' WHERE `username` = '$requestLoanUserUname'";
+		$LoanApprovalQuary2 = "UPDATE `user_data` SET `loan`='$LoanApprovalMoney', `loanInterest`= '$loanInterest' WHERE `username` = '$requestLoanUserUname'";
 		$LoanApprovalResult = mysqli_query($conn, $LoanApprovalQuary);
 		$LoanApprovalResult2 = mysqli_query($conn, $LoanApprovalQuary2);
 		if ($LoanApprovalResult && $LoanApprovalResult2) {
