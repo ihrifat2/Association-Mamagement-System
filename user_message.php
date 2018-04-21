@@ -136,6 +136,7 @@ function validate_input($data) {
 }
 if (isset($_POST['txtmessageBtn'])) {
 	$message = validate_input($_POST['txtmessage']);
+	$message = mysqli_real_escape_string($conn, $message);
 	if (!empty($message)) {
 		$messageQuery = "INSERT INTO `ams_chat`(`id`, `sender`, `message`, `receiver`) VALUES (NULL,'$username','$message','admin')";
 		$messageResult = mysqli_query($conn, $messageQuery);

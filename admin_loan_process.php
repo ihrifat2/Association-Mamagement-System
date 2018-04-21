@@ -123,7 +123,7 @@ $date = date('Y-m-d');
                             <div class="form-group row">
                                 <label for="inputAmount" class="col-sm-5 col-form-label">Amount</label>
                                 <div class="col-sm-7">
-                                    <input type="number" class="form-control" name="InstallmentAmount" id="inputAmount" placeholder="Amount" value="<?php echo $loanInstallment; ?>">
+                                    <input type="text" class="form-control" name="InstallmentAmount" id="inputAmount" placeholder="Amount" value="<?php echo $loanInstallment; ?>" readonly>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-outline-success float-right" name="btn_Installment">Submit</button>
@@ -192,6 +192,9 @@ $date = date('Y-m-d');
     if (isset($_POST['btn_Installment'])) {
         $inst_number = $_POST['InstallmentSerial'];
         $inst_amount = $_POST['InstallmentAmount'];
+        
+        //echo $inst_number . " : " . $inst_amount;
+
         if (empty($inst_number) || empty($inst_amount)) {
             echo '<div id="snackbar">All fields are required.</div>';
             echo "<script>amsFlashMessage()</script>";
@@ -202,6 +205,7 @@ $date = date('Y-m-d');
             if ($inst_result) {
                 echo '<div id="snackbar">Loan Installment Paid.</div>';
                 echo "<script>amsFlashMessage()</script>";
+                echo "<script>javascript:document.location='admin_loan_process.php?name=".$name."'</script>";
             } else {
                 echo mysqli_error($conn);
                 echo '<div id="snackbar">Loan Installment is not Paid.</div>';

@@ -194,6 +194,7 @@ function validate_input($data) {
 }
 if (isset($_POST['txtmessageBtn'])) {
 	$message = validate_input($_POST['txtmessage']);
+	$message = mysqli_real_escape_string($conn, $message);
 	if (!empty($message)) {
 		$messageQuery = "INSERT INTO `ams_chat`(`id`, `sender`, `message`, `receiver`) VALUES (NULL,'$username','$message','$userUsername')";
 		$messageResult = mysqli_query($conn, $messageQuery);
@@ -202,6 +203,7 @@ if (isset($_POST['txtmessageBtn'])) {
 		} else {
 			echo '<div id="snackbar">Failed to Send Message.</div>';
 			echo "<script>amsFlashMessage()</script>";
+			echo mysqli_error($conn);
 		}
 	} else {
 		echo '<div id="snackbar">Write some message.</div>';

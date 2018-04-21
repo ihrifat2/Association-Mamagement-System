@@ -91,6 +91,9 @@ if (!$_SESSION['AMS_admin_login']) {
 					<button type="button" class="list-group-item list-group-item-action bg-dark text-light" data-toggle="modal" data-target="#AMSModalAdminReg">
 						Admin Registration
 					</button>
+					<button type="button" class="list-group-item list-group-item-action bg-dark text-light" data-toggle="modal" data-target="#AMSModalUserReg">
+						User Registration
+					</button>
 				</ul>
 			</div>
 			<div class="col-sm-10 col-md-10 mt-2">
@@ -241,6 +244,64 @@ if (!$_SESSION['AMS_admin_login']) {
 				</div>
 			</div>
 		</div>
+
+		<!-- Modal for user registration -->
+		<div class="modal fade" id="AMSModalUserReg" tabindex="-1" role="dialog" aria-labelledby="AMSModalDeleteUserLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="AMSModalDeleteUserLabel">
+							New User Registration
+						</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form action="#" method="post" enctype="multipart/form-data">
+						<div class="modal-body">
+							<div class="form-group">
+                                <input type="text" name="userRegName" id="name" tabindex="1" class="form-control" placeholder="Name" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="userRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="userRegPhone" id="phone" tabindex="1" class="form-control" placeholder="Phone" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-md">
+                                    <span class="input-group-addon" id="photo">Photo</span>
+                                    <input type="file" class="form-control" name="userRegPhoto">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-md">
+                                    <span class="input-group-addon" id="nid">NID</span>
+                                    <input type="file" class="form-control" name="userRegNID">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="userReference" id="regReference" tabindex="1" class="form-control" placeholder="Reference" maxlength="30">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="userRegUsername" id="regusername" tabindex="1" class="form-control" placeholder="Username" maxlength="30">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="userRegPassword" id="regpassword" tabindex="2" class="form-control" placeholder="Password" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="userRegConpassword" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password" maxlength="50">
+                            </div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+								<button type="submit" name="userRegistration" id="register-submit"	 class="btn btn-success">Registration</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
 	</main>
     <script src="asset/js/jquery-slim.min.js"></script>
     <script src="asset/js/popper.min.js"></script>
@@ -340,4 +401,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminRegistration'])) 
         }
     }
 }
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
+    $userName              	= validate_input($_POST['userRegName']);
+    $userEmail             	= validate_input($_POST['userRegEmail']);
+    $userPhone             	= validate_input($_POST['userRegPhone']);
+    $userReference			= validate_input($_POST['userReference']);
+    $userUsername          	= validate_input($_POST['userRegUsername']);
+    $userPassword          	= validate_input($_POST['userRegPassword']);
+    $userConPassword       	= validate_input($_POST['userRegConpassword']);
+
+    /*User Photo*/
+    $userPhoto_dir = "asset/img/userphoto/";
+    $userPhoto_name = md5( $userUsername . ":" . $userPassword ) . '.' . 'jpg';
+    $userPhoto_tmp  = $_FILES[ 'userRegPhoto' ][ 'tmp_name' ];
+    $userPhoto_type = strtolower(pathinfo($userPhoto_name,PATHINFO_EXTENSION));
+
+
+    /*User NID Card*/
+    $userNid_dir = "asset/img/usernid/";
+    $userNid_name = md5( $userEmail . ":" . $userPhone ) . '.' . 'jpg';
+    $userNid_tmp  = $_FILES[ 'userRegNID' ][ 'tmp_name' ];
+    $userNid_type = strtolower(pathinfo($userNid_name,PATHINFO_EXTENSION));
+    
+    // echo $userPhoto_name . " : " . $userPhoto_tmp . " : " . $userPhoto_type;
+    // echo "<br>";
+    // echo $userNid_name . " : " . $userNid_tmp . " : " . $userNid_type;
+    // echo $userUsername . " : " . $userEmail . " : " . $userPassword . " : " . $userConPassword;
+    
+    if (empty($userName) || empty($userEmail) || empty($userPhone) || empty($userUsername) || empty($userPassword) || empty($userConPassword)) {
+        echo '<div id="snackbar">All fields are required.</div>';
+		echo "<script>amsFlashMessage()</script>";
+    } else {
+        if ($userPassword != $userConPassword) {
+            echo '<div id="snackbar">Password not matched.</div>';
+			echo "<script>amsFlashMessage()</script>";
+        } else {
+            if (filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
+                if (move_uploaded_file($userPhoto_tmp, $userPhoto_dir . $userPhoto_name) && move_uploaded_file($userNid_tmp, $userNid_dir . $userNid_name)) {
+                    $userPassword = password_hash($userConPassword, PASSWORD_BCRYPT);
+                    $money = 0;
+                    $loan = 0;
+                    $userRegQuery1 = "INSERT INTO `user_info`(`id`, `userName`, `userEmail`, `userPhone`, `userPhoto`, `userNid`, `userReference`, `userUsername`, `userPassword`) VALUE (NULL, '$userName', '$userEmail', '$userPhone', '$userPhoto_name', '$userNid_name', '$userReference', '$userUsername', '$userPassword')";
+                    $userRegQuery2 = "INSERT INTO `user_data`(`id`, `username`, `money`, `loan`) VALUES (NULL, '$userUsername', '$money', '$loan')";
+                    $userRegResult1 = mysqli_Query($conn, $userRegQuery1);
+                    $userRegResult2 = mysqli_Query($conn, $userRegQuery2);
+                    if ($userRegResult1 && $userRegResult2) {
+                    	echo '<div id="snackbar">New User Successfully Registered.</div>';
+						echo "<script>amsFlashMessage()</script>";
+                        echo "<script>javascript:document.location='admin_dashboard.php'</script>";
+                    }else{
+                        echo '<div id="snackbar">New User Registration Failed.</div>';
+						echo "<script>amsFlashMessage()</script>";
+                        echo mysqli_error($conn);
+                    }
+                } else {
+                    echo '<div id="snackbar">Photo Upload Failed.</div>';
+					echo "<script>amsFlashMessage()</script>";
+                }
+            } else {
+                echo '<div id="snackbar">Email address is not valid.</div>';
+				echo "<script>amsFlashMessage()</script>";
+            }
+        }
+    }
+}
+
 ?>
