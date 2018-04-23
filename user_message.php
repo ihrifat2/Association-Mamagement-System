@@ -1,15 +1,19 @@
 <?php
-
+//require config file(db connection)
 require 'config.php';
 session_start();
+//Get username form session variable
 $username = $_SESSION['AMS_user_login'];
+//check Admin Authentication and for cash in check id
 if (!$_SESSION['AMS_user_login'] || isset($_GET['name']) == '') {
 	header('Location: index.php');
 	exit();
 }
+//check username is match with parameter name
 if ($_GET['name'] != $username) {
 	header('location: error.php');
 }
+//check the name is valid or not 
 if (isset($_GET)) {
     $name = mysqli_real_escape_string($conn, $_GET['name']);
     $sqlQuery = "SELECT `userUsername` FROM `user_info` WHERE `userUsername` = '$name'";
@@ -19,6 +23,7 @@ if (isset($_GET)) {
         $userUsername = $rows['userUsername'];
     }
 }
+//if name is invalid then the user has no username in database
 if(isset($userUsername) == NULL){
     header('location: error.php');
 }
@@ -117,18 +122,19 @@ if(isset($userUsername) == NULL){
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
-	function amsFlashMessage() {
-	    var x = document.getElementById("snackbar")
-	    x.className = "show";
-	    setTimeout(function(){
-	    	x.className = x.className.replace("show", "");
-	    	// document.location='admin_dashboard.php';
-	    }, 3000);
-	}
+		/*snackbar for flash message*/
+		function amsFlashMessage() {
+		    var x = document.getElementById("snackbar")
+		    x.className = "show";
+		    setTimeout(function(){
+		    	x.className = x.className.replace("show", "");
+		    }, 3000);
+		}
 	</script>
 </body>
 </html>
 <?php
+//validate user input
 function validate_input($data) {
     $data = trim($data);
     $data = stripslashes($data);

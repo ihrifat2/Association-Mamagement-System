@@ -1,10 +1,13 @@
 <?php
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Admin Authentication
 if (!$_SESSION['AMS_user_login']) {
 	header('Location: index.php');
 	exit();
 }
+//Get username form session variable
 $username = $_SESSION['AMS_user_login'];
 $userQuery = "SELECT `user_info`.`userName`, `user_info`.`userPhone`, `user_data`.`money`, `user_data`.`loan` FROM `user_info` INNER JOIN `user_data` ON `user_info`.`userUsername` = `user_data`.`username` WHERE `user_data`.`username` = '$username'";
 $userResult = mysqli_query($conn, $userQuery);
@@ -15,6 +18,7 @@ if ($userData) {
 	$userMoney			= $userData['money'];
 	$userLoan			= $userData['loan'];
 }
+//set loan limit. if user has 5000 taka user can apply for loan
 if ($userMoney > 5000) {
 	$loanLimit = $userMoney * 2;
 }
@@ -105,13 +109,13 @@ if ($userMoney > 5000) {
 			</div>
 			<?php
 
-				$data = array();
-				$sqlquery = "SELECT `beforeWithdraw`, `withdrawMoney`, `afterWithdraw`, `time`, `date` FROM `withdraw_status` WHERE `username` = '$username' ORDER BY `withdraw_status`.`id` DESC ";
-				if ($result = $conn->query($sqlquery)) {
-					while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
-						$data[] = $rows;
+				$WMS_data = array();
+				$WMS_sqlquery = "SELECT `beforeWithdraw`, `withdrawMoney`, `afterWithdraw`, `time`, `date` FROM `withdraw_status` WHERE `username` = '$username' ORDER BY `withdraw_status`.`id` DESC ";
+				if ($WMS_result = $conn->query($WMS_sqlquery)) {
+					while ($WMS_rows = $WMS_result->fetch_array(MYSQLI_ASSOC)) {
+						$WMS_data[] = $WMS_rows;
 					}
-					$result->close();
+					$WMS_result->close();
 				}
 				//$conn->close();	
 			?>
@@ -134,13 +138,13 @@ if ($userMoney > 5000) {
 							<tbody>
 								<?php
 
-									foreach ($data as $row) {
+									foreach ($WMS_data as $WMS_row) {
 										echo "<tr>";
-										echo "<td>" . $row['beforeWithdraw'] . "</td>";
-										echo "<td>" . $row['withdrawMoney'] . "</td>";
-										echo "<td>" . $row['afterWithdraw'] . "</td>";
-										echo "<td>" . $row['date'] . "</td>";
-										echo "<td>" . $row['time'] . "</td>";
+										echo "<td>" . $WMS_row['beforeWithdraw'] . "</td>";
+										echo "<td>" . $WMS_row['withdrawMoney'] . "</td>";
+										echo "<td>" . $WMS_row['afterWithdraw'] . "</td>";
+										echo "<td>" . $WMS_row['date'] . "</td>";
+										echo "<td>" . $WMS_row['time'] . "</td>";
 										echo "</tr>";
 									}
 								?>
@@ -268,4 +272,5 @@ if (isset($_POST['loanApply'])) {
 		echo "<script>amsFlashMessage()</script>";
 	}
 }
+mysqli_close($conn);
 ?>

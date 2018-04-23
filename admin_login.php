@@ -10,7 +10,7 @@ session_start();
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="asset/css/bootstrap3.min.css">
-    <link rel="stylesheet" type="text/css" href="asset/css/style.css">
+    <link rel="stylesheet" href="asset/css/style.css">
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">

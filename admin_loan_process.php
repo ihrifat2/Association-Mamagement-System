@@ -1,11 +1,15 @@
 <?php
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Admin Authentication and for loan process check name
 if (!$_SESSION['AMS_admin_login'] || isset($_GET['name']) == '') {
 	header('Location: index.php');
 	exit();
 }
+//Get user name for name parameter and sqli check
 $name = mysqli_real_escape_string($conn, $_GET['name']);
+//check the id is valid or not 
 if (isset($_GET)) {
     $sqlQuery = "SELECT `money`, `loan`, `loanInterest`, `loanTotal` FROM `user_data` WHERE `username` = '$name'";
     $result= mysqli_query($conn, $sqlQuery);
@@ -55,6 +59,8 @@ if ($Present_Amount == 0) {
     <title><?php echo $project_name; ?></title>
     <link rel="stylesheet" href="asset/css/bootstrap.min.css">
     <link rel="stylesheet" href="asset/css/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css">
 </head>
 <body class="text-center">
 
@@ -199,6 +205,7 @@ if ($Present_Amount == 0) {
         </div>
     </main>
     <script>
+        /*snackbar for flash message*/
         function amsFlashMessage() {
             var x = document.getElementById("snackbar")
             x.className = "show";
@@ -210,31 +217,33 @@ if ($Present_Amount == 0) {
 </body>
 </html>
 <?php
-    if (isset($_POST['btn_Installment'])) {
-        $inst_number = $_POST['InstallmentSerial'];
-        $inst_amount = $_POST['InstallmentAmount'];
-        
-        //echo $inst_number . " : " . $inst_amount;
+if (isset($_POST['btn_Installment'])) {
+    //Get inputs HTML from 
+    $inst_number = $_POST['InstallmentSerial'];
+    $inst_amount = $_POST['InstallmentAmount'];
+    
+    //echo $inst_number . " : " . $inst_amount;
 
-        if (empty($inst_number) || empty($inst_amount)) {
-            echo '<div id="snackbar">All fields are required.</div>';
+    //If inputs are empty
+    if (empty($inst_number) || empty($inst_amount)) {
+        echo '<div id="snackbar">All fields are required.</div>';
+        echo "<script>amsFlashMessage()</script>";
+    } else {
+        $Present_Amount -= $inst_amount;
+        $inst_query = "INSERT INTO `ams_loan`(`id`, `username`, `loan_Amount`, `weeklyInstallment`, `paid_Amount`, `Present_Amount`, `date`, `week`) VALUES (NULL, '$name', '$userLoan', '$loanInstallment', '$inst_amount', '$Present_Amount', '$date', '$inst_number')";
+        $inst_query2 = "UPDATE `user_data` SET `loanTotal`='$Present_Amount' WHERE `username` = '$name'";
+        $inst_result = mysqli_query($conn, $inst_query);
+        $inst_result2 = mysqli_query($conn, $inst_query2);
+        if ($inst_result && $inst_result2) {
+            echo '<div id="snackbar">Loan Installment Paid.</div>';
             echo "<script>amsFlashMessage()</script>";
+            echo "<script>javascript:document.location='admin_loan_process.php?name=".$name."'</script>";
         } else {
-
-            $Present_Amount -= $inst_amount;
-            $inst_query = "INSERT INTO `ams_loan`(`id`, `username`, `loan_Amount`, `weeklyInstallment`, `paid_Amount`, `Present_Amount`, `date`, `week`) VALUES (NULL, '$name', '$userLoan', '$loanInstallment', '$inst_amount', '$Present_Amount', '$date', '$inst_number')";
-            $inst_query2 = "UPDATE `user_data` SET `loanTotal`='$Present_Amount' WHERE `username` = '$name'";
-            $inst_result = mysqli_query($conn, $inst_query);
-            $inst_result2 = mysqli_query($conn, $inst_query2);
-            if ($inst_result && $inst_result2) {
-                echo '<div id="snackbar">Loan Installment Paid.</div>';
-                echo "<script>amsFlashMessage()</script>";
-                echo "<script>javascript:document.location='admin_loan_process.php?name=".$name."'</script>";
-            } else {
-                echo mysqli_error($conn);
-                echo '<div id="snackbar">Loan Installment is not Paid.</div>';
-                echo "<script>amsFlashMessage()</script>";
-            }
+            echo mysqli_error($conn);
+            echo '<div id="snackbar">Loan Installment is not Paid.</div>';
+            echo "<script>amsFlashMessage()</script>";
         }
     }
+}
+mysqli_close($conn);
 ?>

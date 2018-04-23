@@ -1,12 +1,12 @@
 <?php
-
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Admin Authentication
 if (!$_SESSION['AMS_admin_login']) {
 	header('Location: index.php');
 	exit();
 }
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,13 +52,13 @@ if (!$_SESSION['AMS_admin_login']) {
 		</div>
 	</nav>
 	<?php
-		$data = array();
-		$sqlquery = "SELECT * FROM `user_info` INNER JOIN `user_data` ON `user_info`.`userUsername` = `user_data`.`username`";
-		if ($result = $conn->query($sqlquery)) {
-			while ($rows = $result->fetch_array(MYSQLI_ASSOC)) {
-				$data[] = $rows;
+		$UD_data = array();
+		$UD_sqlquery = "SELECT * FROM `user_info` INNER JOIN `user_data` ON `user_info`.`userUsername` = `user_data`.`username`";
+		if ($UD_result = $conn->query($UD_sqlquery)) {
+			while ($UD_rows = $UD_result->fetch_array(MYSQLI_ASSOC)) {
+				$UD_data[] = $UD_rows;
 			}
-			$result->close();
+			$UD_result->close();
 		}
 		//$conn->close();
 	?>
@@ -122,47 +122,47 @@ if (!$_SESSION['AMS_admin_login']) {
 							<tbody id="searchUserList">
 								<?php
 
-								foreach ($data as $row) {
+								foreach ($UD_data as $UD_row) {
 									echo "<tr>";
-									echo '<td><img class="userPhoto" src="asset/img/userphoto/'.$row['userPhoto'].'" alt="'.ucfirst($row['userName']).'"></td>';
-									echo "<td>" . ucfirst($row['userName']) . "</td>";
-									echo "<td>" . $row['userEmail'] . "</td>";
-									echo "<td>" . $row['userPhone'] . "</td>";
-									echo '<td><img class="userPhoto" src="asset/img/usernid/'.$row['userNid'].'" alt=""></td>';
-									echo "<td>" . $row['money'] . "</td>";
-									echo "<td>" . $row['loan'] . "</td>";
+									echo '<td><img class="userPhoto" src="asset/img/userphoto/'.$UD_row['userPhoto'].'" alt="'.ucfirst($UD_row['userName']).'"></td>';
+									echo "<td>" . ucfirst($UD_row['userName']) . "</td>";
+									echo "<td>" . $UD_row['userEmail'] . "</td>";
+									echo "<td>" . $UD_row['userPhone'] . "</td>";
+									echo '<td><img class="userPhoto" src="asset/img/usernid/'.$UD_row['userNid'].'" alt=""></td>';
+									echo "<td>" . $UD_row['money'] . "</td>";
+									echo "<td>" . $UD_row['loan'] . "</td>";
 									echo '
 										<td>
-											<a href="admin_loan_process.php?name='.$row['userUsername'].'" class="btn btn-outline-primary">
+											<a href="admin_loan_process.php?name='.$UD_row['userUsername'].'" class="btn btn-outline-primary">
 												<i class="fas fa-chevron-circle-right"></i>
 											</a>
 										</td>
 									';
 									echo '
 										<td>
-											<a href="admin_cash_in.php?id='.$row['id'].'" class="btn btn-outline-success">
+											<a href="admin_cash_in.php?id='.$UD_row['id'].'" class="btn btn-outline-success">
 												<i class="fas fa-plus"></i>
 											</a>
 										</td>
 										<td>
-											<a href="admin_cash_out.php?id='.$row['id'].'" class="btn btn-outline-warning">
+											<a href="admin_cash_out.php?id='.$UD_row['id'].'" class="btn btn-outline-warning">
 												<i class="fas fa-minus"></i>
 											</a>
 										</td>
 									';
 									echo '<td>
-										<a href="admin_message.php?name='.$row['userUsername'].'" class="btn btn-text">
+										<a href="admin_message.php?name='.$UD_row['userUsername'].'" class="btn btn-text">
 											<i class="fas fa-paper-plane"></i>
 										</a>
 									</td>';
 									echo '<td>
-										<a href="admin_userDetails.php?name='.$row['userUsername'].'" class="btn btn-outline-secondary">
+										<a href="admin_userDetails.php?name='.$UD_row['userUsername'].'" class="btn btn-outline-secondary">
 											<i class="fas fa-info-circle"></i>
 										</a>
 									</td>';
 									echo '
 									<td>
-										<button type="button" id="userDelete" class="btn btn-outline-danger" onclick="userRemove('.$row['id'].')" data-toggle="modal" data-target="#AMSModalDeleteUser">
+										<button type="button" id="userDelete" class="btn btn-outline-danger" onclick="userRemove('.$UD_row['id'].')" data-toggle="modal" data-target="#AMSModalDeleteUser">
 											<i class="fas fa-trash-alt"></i>
 										</button>
 									</td>
@@ -307,15 +307,18 @@ if (!$_SESSION['AMS_admin_login']) {
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
+		//create cookie for delete user
     	function userRemove(id){
     		document.cookie="deleteUserId="+id;
     	}
+    	//view photo
     	$(function() {
 	    	$('img').on('click', function() {
 				$('.enlargeImageModalSource').attr('src', $(this).attr('src'));
 				$('#enlargeImageModal').modal('show');
 			});
 		});
+		/*snackbar for flash message*/
 		function amsFlashMessage() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
@@ -323,6 +326,7 @@ if (!$_SESSION['AMS_admin_login']) {
 		    	x.className = x.className.replace("show", "");
 		    }, 3000);
 		}
+		/*Search user*/
 		function searchUserFunction() {
 			// Declare variables
 			var input, filter, ul, li, a, i;
@@ -345,12 +349,14 @@ if (!$_SESSION['AMS_admin_login']) {
 </body>
 </html>
 <?php
+// validate user input
 function validate_input($data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
 }
+// Delete user
 if (isset($_POST['deleteUser'])) {
 	$deleteUserId = $_COOKIE['deleteUserId'];
 	echo $deleteUserId;
@@ -366,6 +372,7 @@ if (isset($_POST['deleteUser'])) {
         echo "<script>document.getElementById('error').innerHTML = 'Failed to Delete user.' </script>";
     }
 }
+//new admin registration
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminRegistration'])) {
     $adminName              = validate_input($_POST['adminRegName']);
     $adminUsername          = validate_input($_POST['adminRegUsername']);
@@ -401,7 +408,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adminRegistration'])) 
         }
     }
 }
-
+//new user registration
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
     $userName              	= validate_input($_POST['userRegName']);
     $userEmail             	= validate_input($_POST['userRegEmail']);
@@ -429,14 +436,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
     // echo $userNid_name . " : " . $userNid_tmp . " : " . $userNid_type;
     // echo $userUsername . " : " . $userEmail . " : " . $userPassword . " : " . $userConPassword;
     
+    //If inputs are empty
     if (empty($userName) || empty($userEmail) || empty($userPhone) || empty($userUsername) || empty($userPassword) || empty($userConPassword)) {
         echo '<div id="snackbar">All fields are required.</div>';
 		echo "<script>amsFlashMessage()</script>";
     } else {
+    	//If passwords are not match
         if ($userPassword != $userConPassword) {
             echo '<div id="snackbar">Password not matched.</div>';
 			echo "<script>amsFlashMessage()</script>";
         } else {
+        	//If email is invalid
             if (filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
                 if (move_uploaded_file($userPhoto_tmp, $userPhoto_dir . $userPhoto_name) && move_uploaded_file($userNid_tmp, $userNid_dir . $userNid_name)) {
                     $userPassword = password_hash($userConPassword, PASSWORD_BCRYPT);
@@ -466,5 +476,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
         }
     }
 }
-
+mysqli_close($conn);
 ?>

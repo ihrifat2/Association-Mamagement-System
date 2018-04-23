@@ -1,12 +1,15 @@
 <?php
-
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Authentication and name
 if (!$_SESSION['AMS_admin_login'] || isset($_GET['name']) == '') {
 	header('Location: index.php');
 	exit();
 }
+/*Get username from session variable*/
 $username = $_SESSION['AMS_admin_login'];
+/*check username is valid or not*/
 if (isset($_GET)) {
     $name = mysqli_real_escape_string($conn, $_GET['name']);
     $sqlQuery = "SELECT `userUsername` FROM `user_info` WHERE `userUsername` = '$name'";
@@ -156,6 +159,7 @@ if(isset($userUsername) == NULL){
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
+		/*snackbar flash message*/
 		function amsFlashMessage() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
@@ -164,6 +168,7 @@ if(isset($userUsername) == NULL){
 		    	// document.location='admin_dashboard.php';
 		    }, 3000);
 		}
+		/*Search User*/
 		function searchUserFunction() {
 			// Declare variables
 			var input, filter, ul, li, a, i;
@@ -186,6 +191,7 @@ if(isset($userUsername) == NULL){
 </body>
 </html>
 <?php
+/*validate user input*/
 function validate_input($data) {
     $data = trim($data);
     $data = stripslashes($data);

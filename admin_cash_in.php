@@ -1,11 +1,13 @@
 <?php
-
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Authentication and for cash in check id
 if (!$_SESSION['AMS_admin_login'] || isset($_GET['id']) == '') {
 	header('Location: index.php');
 	exit();
 }
+//check the id is valid or not 
 if (isset($_GET)) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     $sqlQuery = "SELECT `username`, `money` FROM `user_data` WHERE `id` = '$id'";
@@ -16,6 +18,7 @@ if (isset($_GET)) {
         $userUsername = $rows['username'];
     }
 }
+//if id is invalid then the user has no money will be null
 if(isset($userMoney) == NULL){
     header('location: error.php');
 }
@@ -96,6 +99,7 @@ if(isset($userMoney) == NULL){
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
+		/*snackbar for flash message with redirect*/
 		function amsFlashRedirect() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
@@ -104,6 +108,7 @@ if(isset($userMoney) == NULL){
 		    	document.location='admin_dashboard.php';
 		    }, 3000);
 		}
+		/*snackbar for flash message without redirect*/
 		function amsFlashMessage() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
@@ -128,15 +133,14 @@ if (isset($_POST['depositSub'])) {
 		if ($depoResult && $depoResult2) {
 			echo '<div id="snackbar">Deposit Successful.</div>';
 			echo "<script>amsFlashRedirect()</script>";
-			// echo "<script>javascript:document.location='admin_dashboard.php'</script>";
 	    }else{
 	    	echo '<div id="snackbar">Failed to Deposit.</div>';
 	    	echo "<script>amsFlashMessage()</script>";
-	        // echo '<script>document.getElementById("error").innerHTML="Failed to Deposit."</script>';
 		}
 	} else {
 		echo '<div id="snackbar">Deposit money between 100 to 500.</div>';
 		echo "<script>amsFlashMessage()</script>";
 	}
 }
+mysqli_close($conn);
 ?>

@@ -1,12 +1,12 @@
 <?php
-
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Admin Authentication
 if (!$_SESSION['AMS_admin_login']) {
 	header('Location: index.php');
 	exit();
 }
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -144,6 +144,7 @@ if (!$_SESSION['AMS_admin_login']) {
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
+		//Loan request button hide/show
 		function loanoption() {
 			var x = document.getElementById('amsLoanApproval').value;
 			if (x == 1) {
@@ -155,18 +156,19 @@ if (!$_SESSION['AMS_admin_login']) {
 				document.getElementById('RequestLoanbtn').removeAttribute("style");
 			}
 		}
+		// Create cookie to grab username and id for loan process
 		function loanAmountId(uname, id){
 			// var idd = id;
 			// var usname = uname;
     		document.cookie="requestLoanUserId="+id;
     		document.cookie="requestLoanUserUname="+uname;
     	}
+    	/*snackbar for flash message*/
     	function amsFlashMessage() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
 		    setTimeout(function(){
 		    	x.className = x.className.replace("show", "");
-		    	// document.location='admin_dashboard.php';
 		    }, 3000);
 		}
 	</script>
@@ -199,4 +201,5 @@ if (isset($_POST['RequestLoan'])) {
 		echo "<script>amsFlashMessage()</script>";
 	}
 }
+mysqli_close($conn);
 ?>

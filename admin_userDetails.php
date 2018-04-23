@@ -1,7 +1,8 @@
 <?php
-
+//require config file(db connection)
 require 'config.php';
 session_start();
+//check Authentication and name
 if (!$_SESSION['AMS_admin_login'] || isset($_GET['name']) == '') {
 	header('Location: index.php');
 	exit();
@@ -152,6 +153,7 @@ if(isset($userMoney) == NULL){
     <script src="asset/js/popper.min.js"></script>
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
+		/*snackbar flash message*/
 		function amsFlashMessage() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
