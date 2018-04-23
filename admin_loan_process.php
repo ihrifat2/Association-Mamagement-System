@@ -7,13 +7,14 @@ if (!$_SESSION['AMS_admin_login'] || isset($_GET['name']) == '') {
 }
 $name = mysqli_real_escape_string($conn, $_GET['name']);
 if (isset($_GET)) {
-    $sqlQuery = "SELECT `money`, `loan`, `loanInterest` FROM `user_data` WHERE `username` = '$name'";
+    $sqlQuery = "SELECT `money`, `loan`, `loanInterest`, `loanTotal` FROM `user_data` WHERE `username` = '$name'";
     $result= mysqli_query($conn, $sqlQuery);
     $rows = mysqli_fetch_assoc($result);
     if ($rows) {
-        $userMoney = $rows['money'];
-        $userLoan = $rows['loan'];
-        $userInterest = $rows['loanInterest'];
+        $userMoney          = $rows['money'];
+        $userLoan           = $rows['loan'];
+        $userInterest       = $rows['loanInterest'];
+        $loanTotal          = $rows['loanTotal'];
     }
 }
 if(isset($userMoney) == NULL){
@@ -26,17 +27,27 @@ $PA_rows = mysqli_fetch_assoc($PA_result);
 if ($PA_rows) {
     $Present_Amount = $PA_rows['present_Amount'];
 } else {
-    $Present_Amount = $userLoan;
+    $Present_Amount = $userLoan + $userInterest;
 }
 function interestCount($loanMoney)
 {
     $interestMoney = $loanMoney / 52;
     return $interestMoney;
 }
-$loanInstallmentMoney = intval(interestCount($userLoan));
-$loanInstallmentInterest = intval(interestCount($userInterest));
-$loanInstallment = $loanInstallmentMoney + $loanInstallmentInterest;
+$loanInterest = $userLoan + $userInterest;
+$loanInstallment = intval(interestCount($loanInterest));
+if ($loanInstallment > $loanTotal) {
+    $loanInstallment = $Present_Amount;
+}
 $date = date('Y-m-d');
+if ($Present_Amount == 0) {
+    $uud_query = "UPDATE `user_data` SET `loan`=0,`loanInterest`=0 WHERE `username` = '$name'";
+    $uud_result = mysqli_query($conn, $uud_query);
+    if ($uud_result) {
+        echo '<div id="snackbar">Thank for paying all loan Amount.</div>';
+        echo "<script>amsFlashMessage()</script>";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -44,8 +55,6 @@ $date = date('Y-m-d');
     <title><?php echo $project_name; ?></title>
     <link rel="stylesheet" href="asset/css/bootstrap.min.css">
     <link rel="stylesheet" href="asset/css/style.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css">
 </head>
 <body class="text-center">
 
@@ -91,9 +100,9 @@ $date = date('Y-m-d');
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group row">
-                                    <label for="loanAmount" class="col-sm-6 col-form-label">loan Amount :</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="loanAmount" value="<?php echo $userLoan; ?>">
+                                    <label for="loanAmount" class="col-sm-8 col-form-label">Total Loan Amount :</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" readonly class="form-control-plaintext" id="loanAmount" value="<?php echo $loanInterest; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -106,18 +115,30 @@ $date = date('Y-m-d');
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="loanAmount" class="col-sm-3 col-form-label">Duration :</label>
-                            <div class="col-sm-9">
-                                <input type="text" readonly class="form-control-plaintext" id="loanAmount" value="52">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <label for="loanAmount" class="col-sm-5 col-form-label">Duration :</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="loanAmount" value="52">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <label for="loanAmount" class="col-sm-6 col-form-label">Interest Rate :</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" readonly class="form-control-plaintext" id="interestRate" value="20%">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <hr>
-                        <form method="post">
+                        <form method="post" action="#">
                             <div class="form-group row">
                                 <label for="inputInstallment" class="col-sm-5 col-form-label">Installment Number</label>
                                 <div class="col-sm-7">
-                                    <input type="number" class="form-control" name="InstallmentSerial" id="inputInstallment" placeholder="Number of Installment">
+                                    <input type="number" class="form-control" name="InstallmentSerial" id="inputInstallment" placeholder="Number of Installment" value="1">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -126,7 +147,7 @@ $date = date('Y-m-d');
                                     <input type="text" class="form-control" name="InstallmentAmount" id="inputAmount" placeholder="Amount" value="<?php echo $loanInstallment; ?>" readonly>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-outline-success float-right" name="btn_Installment">Submit</button>
+                            <button type="submit" class="btn btn-outline-success float-right" name="btn_Installment" id="loanInstallmentBtn">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -199,10 +220,13 @@ $date = date('Y-m-d');
             echo '<div id="snackbar">All fields are required.</div>';
             echo "<script>amsFlashMessage()</script>";
         } else {
+
             $Present_Amount -= $inst_amount;
             $inst_query = "INSERT INTO `ams_loan`(`id`, `username`, `loan_Amount`, `weeklyInstallment`, `paid_Amount`, `Present_Amount`, `date`, `week`) VALUES (NULL, '$name', '$userLoan', '$loanInstallment', '$inst_amount', '$Present_Amount', '$date', '$inst_number')";
+            $inst_query2 = "UPDATE `user_data` SET `loanTotal`='$Present_Amount' WHERE `username` = '$name'";
             $inst_result = mysqli_query($conn, $inst_query);
-            if ($inst_result) {
+            $inst_result2 = mysqli_query($conn, $inst_query2);
+            if ($inst_result && $inst_result2) {
                 echo '<div id="snackbar">Loan Installment Paid.</div>';
                 echo "<script>amsFlashMessage()</script>";
                 echo "<script>javascript:document.location='admin_loan_process.php?name=".$name."'</script>";

@@ -84,13 +84,14 @@ if(isset($userUsername) == NULL){
 							<?php
 								foreach ($amsDatachat as $rowChat) {
 									?>
-									<div class="col-sm-1">
+									<div class="col-sm-2">
 										<span class="badge badge-pill badge-dark">
 											<?php echo $rowChat['sender']; ?>
 										</span>
 									</div>
-									<div class="col-sm-11 text-justify">
+									<div class="col-sm-10 text-justify">
 										<?php echo $rowChat['message']; ?>
+										<hr>
 									</div>
 									<?php
 								}

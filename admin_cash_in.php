@@ -80,7 +80,7 @@ if(isset($userMoney) == NULL){
 							<div class="form-group row">
 								<label for="deposit" class="col-sm-4 col-form-label">Enter Amount</label>
 								<div class="col-sm-8">
-									<input type="number" class="form-control" id="deposit" name="deposit">
+									<input type="number" class="form-control" id="deposit" name="deposit" autofocus="On">
 								</div>
 							</div>
 							<p id="error" class="error"></p>
@@ -120,7 +120,7 @@ if (isset($_POST['depositSub'])) {
 	$depoMoney2 = $depoMoney;
 	if ($depoMoney <= 500 && $depoMoney >= 100) {
 		$depoMoney += $userMoney;
-		$date = date('Y-m-d');
+		$date = date('d-m-Y');
 		$depoQuery = "UPDATE `user_data` SET `money`='$depoMoney' WHERE `id` = '$id'";
 		$depoQuery2 = "INSERT INTO `ams_deposit`(`id`, `username`, `depositMoney`, `totalMoney`, `date`) VALUES (NULL, '$userUsername', '$depoMoney2', '$depoMoney', '$date')";
 		$depoResult = mysqli_query($conn, $depoQuery);

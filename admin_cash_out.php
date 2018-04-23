@@ -112,9 +112,9 @@ if(isset($userMoney) == NULL){
 if (isset($_POST['withdrawSub'])) {
 	$withdrawMoney = $_POST['withdraw'];
 	$withdrawMoney2 = $_POST['withdraw'];
-	$date = date('Y-m-d');
+	$date = date('d-m-Y');
 	$t = date('H');
-	$t = $t + 4;
+	//$t = $t + 4;
 	$time = $t . date(':i:s');
 	if ($withdrawMoney <= ($userMoney-500)) {
 		$withdrawMoney = $userMoney - $withdrawMoney;

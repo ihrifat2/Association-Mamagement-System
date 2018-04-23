@@ -52,7 +52,7 @@ if (!$_SESSION['AMS_admin_login']) {
 	</nav>
 	<?php
 		$amsDataLA = array();
-		$amsSqlQueryLA = "SELECT `id`, `username`, `name`, `nid`, `phone`, `address`, `amount` FROM `loan_apply`";
+		$amsSqlQueryLA = "SELECT `id`, `username`, `name`, `nid`, `phone`, `address`, `amount`, `loanLimit` FROM `loan_apply` WHERE `loanGiven` = 0";
 		if ($amsResultLA = $conn->query($amsSqlQueryLA)) {
 			while ($rowsLA = $amsResultLA->fetch_array(MYSQLI_ASSOC)) {
 				$amsDataLA[] = $rowsLA;
@@ -77,6 +77,7 @@ if (!$_SESSION['AMS_admin_login']) {
 									<th>Phone</th>
 									<th>Address</th>
 									<th>Amount</th>
+									<th>Loan Limit</th>
 									<th>Approval</th>
 								</tr>
 							</thead>
@@ -89,6 +90,7 @@ if (!$_SESSION['AMS_admin_login']) {
 										echo "<td>" . $rowLA['phone'] . "</td>";
 										echo "<td>" . $rowLA['address'] . "</td>";
 										echo "<td>" . $rowLA['amount'] . "</td>";
+										echo "<td>" . $rowLA['loanLimit'] . "</td>";
 										echo '<td><button type="button" class="btn btn-info" onclick="loanAmountId(\''.$rowLA['username'].'\', '.$rowLA['id'].')" data-toggle="modal" data-target="#AMSWithdrawRequest">Action</button></td>';
 										echo "</tr>";
 									}
@@ -181,14 +183,16 @@ if (isset($_POST['RequestLoan'])) {
 	$requestLoanUserUname = $_COOKIE['requestLoanUserUname'];
 	$LoanApprovalMoney = $_POST['RequestLoanAmount'];
 	$loanInterest = interestCount($LoanApprovalMoney);
+	$loanTotal = $LoanApprovalMoney + $loanInterest;
 	if (!empty($LoanApprovalMoney)) {
-		$LoanApprovalQuary = "UPDATE `loan_apply` SET `loanGiven`='$LoanApprovalMoney' WHERE `id` = '$requestLoanUserId'";
-		$LoanApprovalQuary2 = "UPDATE `user_data` SET `loan`='$LoanApprovalMoney', `loanInterest`= '$loanInterest' WHERE `username` = '$requestLoanUserUname'";
+		$LoanApprovalQuary = "UPDATE `loan_apply` SET `loanGiven` = '$LoanApprovalMoney' WHERE `id` = '$requestLoanUserId'";
+		$LoanApprovalQuary2 = "UPDATE `user_data` SET `loan` = '$LoanApprovalMoney', `loanInterest` = '$loanInterest', `loanTotal` = '$loanTotal' WHERE `username` = '$requestLoanUserUname'";
 		$LoanApprovalResult = mysqli_query($conn, $LoanApprovalQuary);
 		$LoanApprovalResult2 = mysqli_query($conn, $LoanApprovalQuary2);
 		if ($LoanApprovalResult && $LoanApprovalResult2) {
 			echo '<div id="snackbar">Loan given.</div>';
 			echo "<script>amsFlashMessage()</script>";
+			echo "<script>javascript:document.location='admin_loan.php'</script>";
 		}
 	} else {
 		echo '<div id="snackbar">Money can\'t be NULL.</div>';
