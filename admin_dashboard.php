@@ -11,7 +11,7 @@ if (!$_SESSION['AMS_admin_login']) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title><?php echo $project_name; ?></title>
+	<title>Admin Dashboard | <?php echo $project_name; ?></title>
 	<link rel="stylesheet" href="asset/css/bootstrap.min.css">
 	<link rel="stylesheet" href="asset/css/style.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
@@ -162,7 +162,7 @@ if (!$_SESSION['AMS_admin_login']) {
 									</td>';
 									echo '
 									<td>
-										<button type="button" id="userDelete" class="btn btn-outline-danger" onclick="userRemove('.$UD_row['id'].')" data-toggle="modal" data-target="#AMSModalDeleteUser">
+										<button type="button" id="userDelete" class="btn btn-outline-danger" onclick="userRemove(\''.$UD_row['id'].'\',\''.$UD_row['userPhoto'].'\',\''.$UD_row['userNid'].'\')" data-toggle="modal" data-target="#AMSModalDeleteUser">
 											<i class="fas fa-trash-alt"></i>
 										</button>
 									</td>
@@ -266,7 +266,7 @@ if (!$_SESSION['AMS_admin_login']) {
                                 <input type="email" name="userRegEmail" id="email" tabindex="1" class="form-control" placeholder="Email Address" maxlength="50">
                             </div>
                             <div class="form-group">
-                                <input type="text" name="userRegPhone" id="phone" tabindex="1" class="form-control" placeholder="Phone" maxlength="50">
+                                <input type="number" name="userRegPhone" id="phone" tabindex="1" class="form-control" placeholder="Phone" maxlength="50">
                             </div>
                             <div class="form-group">
                                 <div class="input-group input-group-md">
@@ -308,8 +308,13 @@ if (!$_SESSION['AMS_admin_login']) {
 	<script src="asset/js/bootstrap.min.js"></script>
 	<script>
 		//create cookie for delete user
-    	function userRemove(id){
+    	function userRemove(id, uimg, unid){
     		document.cookie="deleteUserId="+id;
+    		document.cookie="deleteUserImg="+uimg;
+    		document.cookie="deleteUserNid="+unid;
+    		console.log(id);
+    		console.log(uimg);
+    		console.log(unid);
     	}
     	//view photo
     	$(function() {
@@ -318,7 +323,16 @@ if (!$_SESSION['AMS_admin_login']) {
 				$('#enlargeImageModal').modal('show');
 			});
 		});
-		/*snackbar for flash message*/
+		/*snackbar for flash message with redirect*/
+		function amsFlashRedirect() {
+		    var x = document.getElementById("snackbar")
+		    x.className = "show";
+		    setTimeout(function(){
+		    	x.className = x.className.replace("show", "");
+		    	document.location='admin_dashboard.php';
+		    }, 3000);
+		}
+		/*snackbar for flash message without redirect*/
 		function amsFlashMessage() {
 		    var x = document.getElementById("snackbar")
 		    x.className = "show";
@@ -359,17 +373,22 @@ function validate_input($data) {
 // Delete user
 if (isset($_POST['deleteUser'])) {
 	$deleteUserId = $_COOKIE['deleteUserId'];
-	echo $deleteUserId;
+	$deleteUserImg = $_COOKIE['deleteUserImg'];
+	$deleteUserNid = $_COOKIE['deleteUserNid'];
 	$deleteUserQuery1 = "DELETE FROM `user_info` WHERE `id` = '$deleteUserId'";
 	$deleteUserQuery2 = "DELETE FROM `user_data` WHERE `id` = '$deleteUserId'";
     $deleteUserResult1 = mysqli_query($conn, $deleteUserQuery1);
     $deleteUserResult2 = mysqli_query($conn, $deleteUserQuery2);
     if ($deleteUserResult1 && $deleteUserResult2) {
         //setcookie('bookId', '', time() - 3600);
+        unlink('asset/img/userphoto/'.$deleteUserImg);
+        unlink('asset/img/usernid/'.$deleteUserNid);
         echo '<script>document.cookie = "bookId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";</script>';
-        echo "<script>javascript:document.location='admin_dashboard.php'</script>";
+        echo '<div id="snackbar">User Removed.</div>';
+		echo "<script>amsFlashRedirect()</script>";
     } else {
-        echo "<script>document.getElementById('error').innerHTML = 'Failed to Delete user.' </script>";
+    	echo '<div id="snackbar">Failed to Delete user.</div>';
+		echo "<script>amsFlashMessage()</script>";
     }
 }
 //new admin registration
@@ -458,8 +477,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userRegistration'])) {
                     $userRegResult2 = mysqli_Query($conn, $userRegQuery2);
                     if ($userRegResult1 && $userRegResult2) {
                     	echo '<div id="snackbar">New User Successfully Registered.</div>';
-						echo "<script>amsFlashMessage()</script>";
-                        echo "<script>javascript:document.location='admin_dashboard.php'</script>";
+						echo "<script>amsFlashRedirect()</script>";
                     }else{
                         echo '<div id="snackbar">New User Registration Failed.</div>';
 						echo "<script>amsFlashMessage()</script>";

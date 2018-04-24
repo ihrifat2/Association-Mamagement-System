@@ -26,7 +26,7 @@ if ($userMoney > 5000) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title><?php echo $project_name; ?></title>
+	<title><?php echo ucfirst($username) . " | ".$project_name; ?></title>
 	<link rel="stylesheet" href="asset/css/bootstrap.min.css">
 	<link rel="stylesheet" href="asset/css/style.css">
 	<style>

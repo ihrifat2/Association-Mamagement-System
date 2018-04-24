@@ -56,7 +56,7 @@ if ($Present_Amount == 0) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php echo $project_name; ?></title>
+    <title>Loan Repayment | <?php echo $project_name; ?></title>
     <link rel="stylesheet" href="asset/css/bootstrap.min.css">
     <link rel="stylesheet" href="asset/css/style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">

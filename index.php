@@ -22,7 +22,7 @@ error_reporting(0);
 			<div class="collapse navbar-collapse" id="AMSNavbar">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
-						<a class="nav-link" href="index.php"><?php echo $project_name; ?> <span class="sr-only">(current)</span></a>
+						<a class="nav-link" href="index.php"><?php echo $projects_name; ?> <span class="sr-only">(current)</span></a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-md-0">
@@ -79,19 +79,19 @@ error_reporting(0);
 						<div class="carousel-item active">
 							<img class="d-block w-100" src="asset/img/1stSlide.PNG" alt="First slide">
 							<div class="carousel-caption">
-								<?php echo $project_name; ?>
+								<?php echo $projects_name; ?>
 							</div>
 						</div>
 						<div class="carousel-item">
 							<img class="d-block w-100" src="asset/img/2ndSlide.PNG" alt="Second slide">
 							<div class="carousel-caption">
-								<?php echo $project_name; ?>
+								<?php echo $projects_name; ?>
 							</div>
 						</div>
 						<div class="carousel-item">
 							<img class="d-block w-100" src="asset/img/3rdSlide.PNG" alt="Third slide">
 							<div class="carousel-caption">
-								<?php echo $project_name; ?>
+								<?php echo $projects_name; ?>
 							</div>
 						</div>
 					</div>
@@ -107,7 +107,7 @@ error_reporting(0);
 			</div>	
 		</div>
 		<footer class="my-5 pt-5 text-muted text-center text-small">
-			<p class="mb-1">© 2018 <?php echo $project_name; ?></p>
+			<p class="mb-1">© 2018 <?php echo $projects_name; ?></p>
 			<ul class="list-inline">
 				<li class="list-inline-item"><a href="#">Privacy</a></li>
 				<li class="list-inline-item"><a href="#">Terms</a></li>
