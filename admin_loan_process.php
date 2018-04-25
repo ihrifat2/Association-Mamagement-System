@@ -25,7 +25,7 @@ if(isset($userMoney) == NULL){
     header('location: error.php');
 }
 $Present_Amount;
-$PA_query = "SELECT `present_Amount` FROM `ams_loan` WHERE `username` = '$name' ORDER BY `id` DESC";
+$PA_query = "SELECT `present_Amount` FROM `ams_loan` WHERE `username` = '$name' AND `loanComplete` = 0 ORDER BY `id` DESC";
 $PA_result = mysqli_query($conn, $PA_query);
 $PA_rows = mysqli_fetch_assoc($PA_result);
 if ($PA_rows) {
@@ -44,14 +44,6 @@ if ($loanInstallment > $loanTotal) {
     $loanInstallment = $Present_Amount;
 }
 $date = date('Y-m-d');
-if ($Present_Amount == 0) {
-    $uud_query = "UPDATE `user_data` SET `loan`=0,`loanInterest`=0 WHERE `username` = '$name'";
-    $uud_result = mysqli_query($conn, $uud_query);
-    if ($uud_result) {
-        echo '<div id="snackbar">Thank for paying all loan Amount.</div>';
-        echo "<script>amsFlashMessage()</script>";
-    }
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -61,6 +53,12 @@ if ($Present_Amount == 0) {
     <link rel="stylesheet" href="asset/css/style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css">
+    <style>
+        .depoMoney {
+            height: 535px;
+            overflow-y: scroll;
+        }
+    </style>
 </head>
 <body class="text-center">
 
@@ -163,7 +161,7 @@ if ($Present_Amount == 0) {
                     <div class="card-header bg-warning">
                         <h3>Loan Table</h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body depoMoney">
                         <table class="table table-hover table-sm table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -243,6 +241,17 @@ if (isset($_POST['btn_Installment'])) {
             echo '<div id="snackbar">Loan Installment is not Paid.</div>';
             echo "<script>amsFlashMessage()</script>";
         }
+    }
+}
+if ($Present_Amount == 0) {
+    $uud_query = "UPDATE `user_data` SET `loan` = 0,`loanInterest`= 0 WHERE `username` = '$name'";
+    $uud_query2 = "UPDATE `ams_loan` SET `loanComplete`= 1 WHERE `username` = '$name'";
+    echo "string";
+    $uud_result = mysqli_query($conn, $uud_query);
+    $uud_result2 = mysqli_query($conn, $uud_query2);
+    if ($uud_result && $uud_result2) {
+        echo '<div id="snackbar">Thank for paying all loan Amount.</div>';
+        echo "<script>amsFlashMessage()</script>";
     }
 }
 mysqli_close($conn);
