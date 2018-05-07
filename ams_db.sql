@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 23, 2018 at 02:30 PM
+-- Generation Time: Apr 30, 2018 at 11:14 PM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 7.0.8
 
@@ -68,6 +68,23 @@ CREATE TABLE `ams_deposit` (
   `date` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `ams_deposit`
+--
+
+INSERT INTO `ams_deposit` (`id`, `username`, `depositMoney`, `totalMoney`, `date`) VALUES
+(1, 'imran', 500, 500, '25-04-2018'),
+(2, 'imran', 500, 1000, '25-04-2018'),
+(3, 'imran', 500, 1500, '25-04-2018'),
+(4, 'imran', 500, 2000, '25-04-2018'),
+(5, 'imran', 500, 2500, '25-04-2018'),
+(6, 'imran', 500, 3000, '25-04-2018'),
+(7, 'imran', 500, 3500, '25-04-2018'),
+(8, 'imran', 500, 4000, '25-04-2018'),
+(9, 'imran', 500, 4500, '25-04-2018'),
+(10, 'imran', 500, 5000, '25-04-2018'),
+(11, 'imran', 500, 5500, '25-04-2018');
+
 -- --------------------------------------------------------
 
 --
@@ -82,7 +99,8 @@ CREATE TABLE `ams_loan` (
   `paid_Amount` int(11) NOT NULL,
   `present_Amount` int(11) NOT NULL,
   `date` varchar(20) NOT NULL,
-  `week` int(11) NOT NULL
+  `week` int(11) NOT NULL,
+  `loanComplete` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -102,6 +120,16 @@ CREATE TABLE `loan_apply` (
   `loanGiven` int(11) NOT NULL,
   `loanLimit` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `loan_apply`
+--
+
+INSERT INTO `loan_apply` (`id`, `username`, `name`, `nid`, `phone`, `address`, `amount`, `loanGiven`, `loanLimit`) VALUES
+(1, 'imran', 'imran hadid', '123456789', '23456789', 'bd', 11000, 10000, 11000),
+(2, 'imran', 'imran hadid', '1234567890', '23456789', 'bb', 1000, 1000, 11000),
+(3, 'imran', 'imran hadid', '1234567890', '23456789', 'bb', 1000, 1000, 11000),
+(4, 'imran', 'imran hadid', '1234567890', '23456789', 'bb', 1000, 1000, 11000);
 
 -- --------------------------------------------------------
 
@@ -123,7 +151,7 @@ CREATE TABLE `user_data` (
 --
 
 INSERT INTO `user_data` (`id`, `username`, `money`, `loan`, `loanInterest`, `loanTotal`) VALUES
-(1, 'imran', 0, 0, 0, 0);
+(1, 'imran', 5500, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -236,7 +264,7 @@ ALTER TABLE `ams_chat`
 -- AUTO_INCREMENT for table `ams_deposit`
 --
 ALTER TABLE `ams_deposit`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `ams_loan`
 --
@@ -246,7 +274,7 @@ ALTER TABLE `ams_loan`
 -- AUTO_INCREMENT for table `loan_apply`
 --
 ALTER TABLE `loan_apply`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `user_data`
 --
